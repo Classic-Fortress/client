@@ -903,6 +903,9 @@ static void VID_Restart_f(void)
 
 	ReloadPaletteAndColormap();
 
+	// keys can get stuck because SDL2 doesn't send keyup event when the video system is down
+	Key_ClearStates();
+
 	VID_Init(host_basepal);
 
 	// force models to reload (just flush, no actual loading code here)
@@ -927,7 +930,6 @@ static void VID_Restart_f(void)
 
 	// window may be re-created, so caption need to be forced to update
 	CL_UpdateCaption(true);
-
 }
 
 void VID_RegisterCommands(void) 

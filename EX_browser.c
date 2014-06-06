@@ -111,6 +111,7 @@ cvar_t  sb_hidenotempty  = {"sb_hidenotempty",     "0"};
 cvar_t  sb_hidefull      = {"sb_hidefull",         "0"};
 cvar_t  sb_hidedead      = {"sb_hidedead",         "1"};
 cvar_t  sb_hidehighping  = {"sb_hidehighping",     "0"};
+cvar_t  sb_hideother     = {"sb_hideother",        "0"};
 cvar_t  sb_pinglimit     = {"sb_pinglimit",       "80"};
 cvar_t  sb_showproxies   = {"sb_showproxies",      "0"};
 
@@ -2836,6 +2837,10 @@ void Filter_Servers(void)
         if (sb_hidefull.value  &&  s->playersn >= (tmp ? atoi(tmp) : 255))
             continue;
 
+	tmp = ValueForKey(s, "*gamedir");
+	if (sb_hideother.value && tmp && strcmp(tmp, com_gamedirfile))
+		continue;
+
 		s->passed_filters = 1;  // passed
         serversn_passed++;
     }
@@ -3182,6 +3187,7 @@ void Browser_Init (void)
     Cvar_Register(&sb_hidefull);
     Cvar_Register(&sb_hidedead);
 	Cvar_Register(&sb_hidehighping);
+	Cvar_Register(&sb_hideother);
 	Cvar_Register(&sb_pinglimit);
 	Cvar_Register(&sb_showproxies);
     Cvar_Register(&sb_sourcevalidity);

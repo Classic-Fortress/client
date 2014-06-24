@@ -51,6 +51,7 @@
 static void in_raw_callback(cvar_t *var, char *value, qbool *cancel);
 static void in_grab_windowed_mouse_callback(cvar_t *var, char *value, qbool *cancel);
 static void conres_changed_callback (cvar_t *var, char *string, qbool *cancel);
+static void cf_sbar_callback (cvar_t *var, char *string, qbool *cancel);
 static void GrabMouse(qbool grab, qbool raw);
 static void GfxInfo_f(void);
 static void HandleEvents();
@@ -115,9 +116,29 @@ cvar_t r_verbose              = {"vid_verbose",           "0",   CVAR_SILENT };
 cvar_t r_showextensions       = {"vid_showextensions",    "0",   CVAR_SILENT };
 cvar_t gl_multisamples        = {"gl_multisamples",       "0",   CVAR_LATCH }; // It's here because it needs to be registered before window creation
 
+cvar_t cf_sbar                = {"cf_sbar",               "0",   CVAR_ARCHIVE, cf_sbar_callback };
+
 //
 // function declaration
 //
+
+static void cf_sbar_update()
+{
+	char *value = Q_ftos(floor(glConfig.vidHeight / r_conscale.value / 8 - 12));
+
+	if (!cf_sbar.value)
+		value = "";
+
+	Info_SetValueForKey (cls.userinfo, "sb", "", MAX_INFO_STRING);
+	CL_UserinfoChanged("sb", value);
+}
+
+static void cf_sbar_callback (cvar_t *var, char *value, qbool *cancel)
+{
+	if (var == &cf_sbar)
+		Cvar_SetValue(&cf_sbar, Q_atoi(value));
+	cf_sbar_update();
+}
 
 static void in_raw_callback(cvar_t *var, char *value, qbool *cancel)
 {
@@ -289,6 +310,7 @@ static void window_event(SDL_WindowEvent *event)
 				}
 				if (!r_conwidth.integer || !r_conheight.integer)
 					VID_UpdateConRes();
+				cf_sbar_update();
 			}
 			break;
 	}
@@ -498,6 +520,7 @@ void VID_RegisterCvars(void)
 	Cvar_Register(&r_conscale);
 	Cvar_Register(&vid_flashonactivity);
 	Cvar_Register(&r_showextensions);
+	Cvar_Register(&cf_sbar);
 
 	Cvar_ResetCurrentGroup();
 }
@@ -534,6 +557,8 @@ static void VID_SetupResolution(void)
 		glConfig.displayFrequency = 0;
 
 	}
+
+	cf_sbar_update();
 }
 
 static void VID_SDL_GL_SetupAttributes(void)

@@ -545,6 +545,8 @@ float CL_KeyState (kbutton_t *key, qbool lookbutton)
 	return val;
 }
 
+void OnCFSensitivityChange (cvar_t *var, char *value, qbool *cancel);
+
 //==========================================================================
 
 cvar_t	cl_upspeed = {"cl_upspeed","400"};
@@ -561,6 +563,7 @@ cvar_t	cl_pitchspeed = {"cl_pitchspeed","150"};
 cvar_t	lookspring = {"lookspring","0"};
 cvar_t	lookstrafe = {"lookstrafe","0"};
 cvar_t	sensitivity = {"sensitivity","12",CVAR_ARCHIVE};
+cvar_t	cf_sensitivity = {"cf_sensitivity", "", CVAR_ARCHIVE, OnCFSensitivityChange};
 cvar_t	cursor_sensitivity = {"scr_cursor_sensitivity", "1"};
 cvar_t	freelook = {"freelook","1"};
 
@@ -570,6 +573,16 @@ cvar_t	m_forward = {"m_forward","1",CVAR_ARCHIVE};
 cvar_t	m_side = {"m_side","0.8",CVAR_ARCHIVE};
 cvar_t	m_accel = {"m_accel", "0",CVAR_ARCHIVE};
 
+void OnCFSensitivityChange (cvar_t *var, char *value, qbool *cancel)
+{
+	float fvalue = Q_atof(value);
+
+	if (strlen(value) > 0 && (var->value == sensitivity.value || strlen(var->string) == 0))
+		Cvar_SetValue(&sensitivity, fvalue);
+
+	Info_SetValueForKey (cls.userinfo, "ds", "", MAX_INFO_STRING);
+	CL_UserinfoChanged("ds", value);
+}
 
 void CL_Rotate_f (void)
 {
@@ -1117,6 +1130,7 @@ void CL_InitInput (void)
 	Cvar_Register (&lookspring);
 	Cvar_Register (&lookstrafe);
 	Cvar_Register (&sensitivity);
+	Cvar_Register (&cf_sensitivity);
 	Cvar_Register (&freelook);
 	
 	Cvar_SetCurrentGroup(CVAR_GROUP_MENU);

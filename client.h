@@ -670,6 +670,7 @@ void CL_Disconnect_f (void);
 void CL_Reconnect_f (void);
 qbool CL_ConnectedToProxy(void);
 void CL_MakeActive(void);
+void CL_UserinfoChanged (char *key, char *string);
 
 extern char emodel_name[], pmodel_name[];
 

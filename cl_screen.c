@@ -80,9 +80,11 @@ float	unzoomedsensitivity;
 
 void OnFovChange (cvar_t *var, char *value, qbool *cancel);
 void OnDefaultFovChange (cvar_t *var, char *value, qbool *cancel);
+void OnCFFovChange (cvar_t *var, char *value, qbool *cancel);
 void OnChange_scr_clock_format (cvar_t *var, char *value, qbool *cancel);
 cvar_t	scr_fov					= {"fov", "90", CVAR_ARCHIVE, OnFovChange};	// 10 - 140
 cvar_t	default_fov				= {"default_fov", "90", CVAR_NONE, OnDefaultFovChange};
+cvar_t	cf_fov				= {"cf_fov", "", CVAR_ARCHIVE, OnCFFovChange};
 cvar_t	scr_viewsize			= {"viewsize", "100", CVAR_NONE};
 cvar_t	scr_consize				= {"scr_consize", "0.5"};
 cvar_t	scr_conspeed			= {"scr_conspeed", "9999"};
@@ -392,6 +394,24 @@ void OnDefaultFovChange (cvar_t *var, char *value, qbool *cancel)
 		Com_Printf("Invalid default_fov\n");
 		*cancel = true;
 	}
+}
+
+void OnCFFovChange (cvar_t *var, char *value, qbool *cancel)
+{
+	float newfov = Q_atof(value);
+
+	if (newfov < 10.0 || newfov > 140.0){
+		if (newfov != 0)
+			Com_Printf("Invalid cf_fov\n");
+		*cancel = true;
+		return;
+	}
+
+	if (strlen(value) > 0 && (scr_fov.value == var->value || strlen(var->string) == 0))
+		Cvar_SetValue(&scr_fov, newfov);
+
+	Info_SetValueForKey (cls.userinfo, "df", "", MAX_INFO_STRING);
+	CL_UserinfoChanged("df", value);
 }
 
 static void CalcFov(float fov, float *fov_x, float *fov_y, float width, float height)
@@ -3963,6 +3983,7 @@ void SCR_Init (void)
 	Cvar_SetCurrentGroup(CVAR_GROUP_VIEW);
 	Cvar_Register (&scr_fov);
 	Cvar_Register (&default_fov);
+	Cvar_Register (&cf_fov);
 	Cvar_Register (&scr_viewsize);
 
 	Cvar_SetCurrentGroup(CVAR_GROUP_SBAR);

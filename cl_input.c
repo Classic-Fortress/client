@@ -560,15 +560,15 @@ cvar_t	cl_pitchspeed = {"cl_pitchspeed","150"};
 
 cvar_t	lookspring = {"lookspring","0"};
 cvar_t	lookstrafe = {"lookstrafe","0"};
-cvar_t	sensitivity = {"sensitivity","12"};
+cvar_t	sensitivity = {"sensitivity","12",CVAR_ARCHIVE};
 cvar_t	cursor_sensitivity = {"scr_cursor_sensitivity", "1"};
 cvar_t	freelook = {"freelook","1"};
 
-cvar_t	m_pitch = {"m_pitch","0.022"};
-cvar_t	m_yaw = {"m_yaw","0.022"};
-cvar_t	m_forward = {"m_forward","1"};
-cvar_t	m_side = {"m_side","0.8"};
-cvar_t	m_accel = {"m_accel", "0"};
+cvar_t	m_pitch = {"m_pitch","0.022",CVAR_ARCHIVE};
+cvar_t	m_yaw = {"m_yaw","0.022",CVAR_ARCHIVE};
+cvar_t	m_forward = {"m_forward","1",CVAR_ARCHIVE};
+cvar_t	m_side = {"m_side","0.8",CVAR_ARCHIVE};
+cvar_t	m_accel = {"m_accel", "0",CVAR_ARCHIVE};
 
 
 void CL_Rotate_f (void)

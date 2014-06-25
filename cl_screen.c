@@ -81,7 +81,7 @@ float	unzoomedsensitivity;
 void OnFovChange (cvar_t *var, char *value, qbool *cancel);
 void OnDefaultFovChange (cvar_t *var, char *value, qbool *cancel);
 void OnChange_scr_clock_format (cvar_t *var, char *value, qbool *cancel);
-cvar_t	scr_fov					= {"fov", "90", CVAR_NONE, OnFovChange};	// 10 - 140
+cvar_t	scr_fov					= {"fov", "90", CVAR_ARCHIVE, OnFovChange};	// 10 - 140
 cvar_t	default_fov				= {"default_fov", "90", CVAR_NONE, OnDefaultFovChange};
 cvar_t	scr_viewsize			= {"viewsize", "100", CVAR_NONE};
 cvar_t	scr_consize				= {"scr_consize", "0.5"};

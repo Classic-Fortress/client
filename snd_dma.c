@@ -86,7 +86,7 @@ static sfx_t	*ambient_sfx[NUM_AMBIENTS];
 
 
 cvar_t bgmvolume = {"bgmvolume", "1"}; // CD music volume
-cvar_t s_volume = {"volume", "0.7"};
+cvar_t s_volume = {"volume", "0.7", CVAR_ARCHIVE};
 cvar_t s_raw_volume = {"s_raw_volume", "1"};
 cvar_t s_nosound = {"s_nosound", "0"};
 cvar_t s_precache = {"s_precache", "1"};

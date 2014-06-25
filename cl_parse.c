@@ -25,7 +25,6 @@ $Id: cl_parse.c,v 1.135 2007-10-28 19:56:44 qqshka Exp $
 #include "cdaudio.h"
 #include "ignore.h"
 #include "fchecks.h"
-#include "config_manager.h"
 #include "utils.h"
 #include "localtime.h"
 #include "sbar.h"
@@ -1383,7 +1382,6 @@ void CL_ParseServerData (void)
 {
 	char *str, fn[MAX_OSPATH];
 	FILE *f;
-	qbool cflag = false;
 	int i, protover;
 
 	Com_DPrintf("Serverdata packet received.\n");
@@ -1473,59 +1471,12 @@ void CL_ParseServerData (void)
 		Cvar_SetValue (&v_idlescale, 0);
 	}
 
-	if (strcasecmp(cls.gamedirfile, str)) 
+	if (!com_serveractive && strcmp(str, com_gamedirfile))
 	{
-		strlcpy (cls.gamedirfile, str, sizeof(cls.gamedirfile));
-		snprintf (cls.gamedir, sizeof(cls.gamedir),
-			"%s/%s", com_basedir, cls.gamedirfile);
-		cflag = true;
-	}
-
-	if (!com_serveractive)
+		Host_WriteConfiguration ();
 		FS_SetGamedir (str);
-
-	if (cfg_legacy_exec.value && (cflag || cfg_legacy_exec.value >= 2)) 
-	{
-		snprintf (fn, sizeof(fn), "%s/%s", cls.gamedir, "config.cfg");
-		Cbuf_AddText ("cl_warncmd 0\n");
-		if ((f = fopen(fn, "r")) != NULL) 
-		{
-			fclose(f);
-			if (!strcmp(cls.gamedirfile, com_gamedirfile))
-				Cbuf_AddText ("exec config.cfg\n");
-			else
-				Cbuf_AddText (va("exec ../%s/config.cfg\n", cls.gamedirfile));
-		} 
-		else if (cfg_legacy_exec.value == 3 && strcmp(cls.gamedir, "qw"))
-		{
-			snprintf (fn, sizeof(fn), "qw/%s", "config.cfg");
-			if ((f = fopen(fn, "r")) != NULL) 
-			{
-				fclose(f);
-				Cbuf_AddText ("exec config.cfg\n");
-			}
-		}
-		snprintf (fn, sizeof(fn), "%s/%s", cls.gamedir, "frontend.cfg");
-		if ((f = fopen(fn, "r")) != NULL) 
-		{
-			fclose(f);
-			if (!strcmp(cls.gamedirfile, com_gamedirfile))
-				Cbuf_AddText ("exec frontend.cfg\n");
-			else
-				Cbuf_AddText (va("exec ../%s/frontend.cfg\n", cls.gamedirfile));
-		} 
-		else if (cfg_legacy_exec.value == 3 && strcmp(cls.gamedir, "qw"))
-		{
-			snprintf (fn, sizeof(fn), "qw/%s", "frontend.cfg");
-			if ((f = fopen(fn, "r")) != NULL) 
-			{
-				fclose(f);
-				Cbuf_AddText ("exec frontend.cfg\n");
-			}
-		}
-		Cbuf_AddText ("cl_warncmd 1\n");
+		Host_LoadConfiguration ();
 	}
-
 
 	// parse player slot, high bit means spectator
 	if (cls.mvdplayback)

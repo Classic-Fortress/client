@@ -25,7 +25,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "gl_model.h"
 #include "gl_local.h"
 #include "teamplay.h"
-#include "config_manager.h"
 #include "rulesets.h"
 #include "version.h"
 #include "utils.h"

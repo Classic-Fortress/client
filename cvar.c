@@ -85,6 +85,8 @@ void Cvar_ResetVar (cvar_t *var)
 {
 	if (var && strcmp(var->string, var->defaultvalue))
 		Cvar_Set(var, var->defaultvalue);
+
+	var->flags &= ~CVAR_ARCHIVE;
 }
 
 void Cvar_Reset (qbool use_regex)
@@ -313,6 +315,9 @@ void Cvar_Set (cvar_t *var, char *value)
 			return;
 	}
 
+	if ((var->string && strcmp(var->string, value)) || (var->defaultvalue && strcmp(var->defaultvalue, value)))
+		var->modified = true;
+
 	// dup string first (before free) since 'value' and 'var->string' can point at the same memory area.
 	new_val = Z_Strdup (value);
 	// free the old value string.
@@ -322,7 +327,6 @@ void Cvar_Set (cvar_t *var, char *value)
 	var->value = Q_atof (var->string);
 	var->integer = Q_atoi (var->string);
 	StringToRGB_W(var->string, var->color);
-	var->modified = true;
 
 #ifndef CLIENTONLY
 	if (var->flags & CVAR_SERVERINFO)
@@ -563,7 +567,9 @@ void Cvar_Register (cvar_t *var)
 	var->value = Q_atof (var->string);
 	var->integer = Q_atoi (var->string);
 	StringToRGB_W(var->string, var->color);
-	var->modified = true;
+
+	if (strcmp(var->defaultvalue, var->string))
+		var->modified = true;
 
 	// link the variable in
 	key = Com_HashKey (var->name) % VAR_HASHPOOL_SIZE;
@@ -841,6 +847,32 @@ void Cvar_Set_f (void)
 		}
 		var = Cvar_Create (var_name, Cmd_Argv(2), 0);
 	}
+}
+
+void Cvar_Seta_f (void)
+{
+	cvar_t *var;
+	char *var_name;
+
+	if (Cmd_Argc() != 3) {
+		Com_Printf ("Usage: %s <cvar> <value>\n", Cmd_Argv(0));
+		return;
+	}
+
+	var_name = Cmd_Argv (1);
+	var = Cvar_Find (var_name);
+
+	if (var) {
+		Cvar_Set (var, Cmd_Argv(2));
+	} else {
+		if (Cmd_Exists(var_name)) {
+			Com_Printf ("\"%s\" is a command\n", var_name);
+			return;
+		}
+		var = Cvar_Create (var_name, Cmd_Argv(2), 0);
+	}
+
+	var->flags |= CVAR_ARCHIVE;
 }
 
 void Cvar_Set_tp_f (void)
@@ -1309,11 +1341,29 @@ void Cvar_CleanUpTempVars (void)
 	}
 }
 
+/*
+============
+Cvar_WriteVariables
+
+Writes lines containing "set variable value" for all variables
+with the archive flag set to true.
+============
+*/
+void Cvar_WriteVariables (FILE *f) 
+{
+	cvar_t  *var;
+    
+	for (var = cvar_vars ; var ; var = var->next)
+		if (var->modified && !(var->flags & CVAR_ROM) && (var->flags & CVAR_ARCHIVE))
+			fprintf (f, "seta %s \"%s\"\n", var->name, var->string);
+}
+
 void Cvar_Init (void)
 {
 	Cmd_AddCommand ("cvarlist", Cvar_CvarList_f);
 	Cmd_AddCommand ("cvarlist_re", Cvar_CvarList_re_f);
 	Cmd_AddCommand ("set", Cvar_Set_f);
+	Cmd_AddCommand ("seta", Cvar_Seta_f);
 	Cmd_AddCommand ("set_tp", Cvar_Set_tp_f);
 	Cmd_AddCommand ("set_ex", Cvar_Set_ex_f);
 	Cmd_AddCommand ("set_alias_str", Cvar_Set_Alias_Str_f);

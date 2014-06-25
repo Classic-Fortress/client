@@ -1757,8 +1757,10 @@ void SV_Gamedir_f (void)
 		return;
 	}
 
+	Host_WriteConfiguration ();
 	FS_SetGamedir (dir);
 	Info_SetValueForStarKey (svs.info, "*gamedir", dir, MAX_SERVERINFO_STRING);
+	Host_LoadConfiguration ();
 }
 
 /*

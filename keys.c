@@ -1744,6 +1744,22 @@ void History_Shutdown (void)
 }
 // } Added by VVD
 
+/*
+============
+Key_WriteBindings
+
+Writes lines containing "bind key value"
+============
+*/
+void Key_WriteBindings (FILE *f) 
+{
+	int i;  
+
+	for (i=0 ; i<256 ; i++)
+		if (keybindings[i])
+			fprintf (f, "bind %s \"%s\"\n", Key_KeynumToString(i), keybindings[i]);
+}
+
 void Key_Init (void) {
 	int i;
 

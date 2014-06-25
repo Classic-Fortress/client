@@ -194,7 +194,6 @@ OBJS_c := \
     cl_view.o \
     common_draw.o \
     console.o \
-    config_manager.o \
     demo_controls.o \
     document_rendering.o \
     fchecks.o \

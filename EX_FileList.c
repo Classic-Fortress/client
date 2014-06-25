@@ -1962,7 +1962,6 @@ static void OnChange_file_browser_sort_mode(cvar_t *var, char *string, qbool *ca
 	extern filelist_t demo_filelist;
 	extern filelist_t help_index_fl;
 	extern filelist_t help_tutorials_fl;
-	extern filelist_t configs_filelist;
 	extern filelist_t skins_filelist;
 
 	if(host_everything_loaded)
@@ -1970,7 +1969,6 @@ static void OnChange_file_browser_sort_mode(cvar_t *var, char *string, qbool *ca
 		demo_filelist.need_resort		= true;
 		help_index_fl.need_resort		= true;
 		help_tutorials_fl.need_resort	= true;
-		configs_filelist.need_resort	= true;
 		skins_filelist.need_resort		= true;
 	}
 }

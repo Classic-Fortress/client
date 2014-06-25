@@ -49,21 +49,7 @@ hud_t *hud_netgraph = NULL;
 // HUD planning
 //
 
-struct
-{
-	// this is temporary storage place for some of user's settings
-	// hud_* values will be dumped into config file
-	int old_multiview;
-	int old_fov;
-	int old_newhud;
-
-	qbool active;
-} autohud;
-
-void OnAutoHudChange(cvar_t *var, char *value, qbool *cancel);
-qbool autohud_loaded = false;
 cvar_t hud_planmode = {"hud_planmode",   "0"};
-cvar_t mvd_autohud = {"mvd_autohud", "0", 0, OnAutoHudChange};
 cvar_t hud_digits_trim = {"hud_digits_trim", "1"};
 
 int hud_stats[MAX_CL_STATS];
@@ -4355,113 +4341,11 @@ void HUD_NewRadarMap()
 }
 #endif // WITH_PNG
 
-#define TEMPHUD_NAME "_temphud"
-#define TEMPHUD_FULLPATH "configs/"TEMPHUD_NAME".cfg"
-
-// will check if user wants to un/load external MVD HUD automatically
-void HUD_AutoLoad_MVD(int autoload) {
-	char *cfg_suffix = "custom";
-	extern cvar_t scr_fov;
-	extern cvar_t scr_newHud;
-	extern void Cmd_Exec_f (void);
-	extern void DumpConfig(char *name);
-
-	if (autoload && cls.mvdplayback) {
-		// Turn autohud ON here
-
-		Com_DPrintf("Loading MVD Hud\n");
-		// Store current settings.
-		if (!autohud.active)
-		{
-			extern cvar_t cfg_save_cmdline, cfg_save_cvars, cfg_save_cmds, cfg_save_aliases, cfg_save_binds;
-
-			// Save old cfg_save values so that we don't screw the users
-			// settings when saving the temp config.
-			int old_cmdline = cfg_save_cmdline.value;
-			int old_cvars	= cfg_save_cvars.value;
-			int old_cmds	= cfg_save_cmds.value;
-			int old_aliases = cfg_save_aliases.value;
-			int old_binds	= cfg_save_binds.value;
-
-			autohud.old_fov = (int) scr_fov.value;
-			autohud.old_multiview = (int) cl_multiview.value;
-			autohud.old_newhud = (int) scr_newHud.value;
-
-			// Make sure everything current settings are saved.
-			Cvar_SetValue(&cfg_save_cmdline,	1);
-			Cvar_SetValue(&cfg_save_cvars,		1);
-			Cvar_SetValue(&cfg_save_cmds,		1);
-			Cvar_SetValue(&cfg_save_aliases,	1);
-			Cvar_SetValue(&cfg_save_binds,		1);
-
-			// Save a temporary config.
-			DumpConfig(TEMPHUD_NAME".cfg");
-
-			Cvar_SetValue(&cfg_save_cmdline,	old_cmdline);
-			Cvar_SetValue(&cfg_save_cvars,		old_cvars);
-			Cvar_SetValue(&cfg_save_cmds,		old_cmds);
-			Cvar_SetValue(&cfg_save_aliases,	old_aliases);
-			Cvar_SetValue(&cfg_save_binds,		old_binds);
-		}
-
-		// load MVD HUD config
-		switch ((int) autoload) {
-			case 1: // load 1on1 or 4on4 or custom according to $matchtype
-				if (!strncmp(Macro_MatchType(), "duel", 4)) {
-					cfg_suffix = "1on1";
-				} else if (!strncmp(Macro_MatchType(), "4on4", 4)) {
-					cfg_suffix = "4on4";
-				} else {
-					cfg_suffix = "custom";
-				}
-				break;
-			default:
-			case 2:
-				cfg_suffix = "custom";
-				break;
-		}
-
-		Cbuf_AddText(va("exec cfg/mvdhud_%s.cfg\n", cfg_suffix));
-
-		autohud.active = true;
-		return;
-	}
-
-	if ((!cls.mvdplayback || !autoload) && autohud.active) {
-		// either user decided to turn mvd autohud off or mvd playback is over
-		// -> Turn autohud OFF here
-		FILE *tempfile;
-		char *fullname = va("%s/ezquake/"TEMPHUD_FULLPATH, com_basedir);
-
-		Com_DPrintf("Unloading MVD Hud\n");
-		// load stored settings
-		Cvar_SetValue(&scr_fov, autohud.old_fov);
-		Cvar_SetValue(&cl_multiview, autohud.old_multiview);
-		Cvar_SetValue(&scr_newHud, autohud.old_newhud);
-		//Cmd_TokenizeString("exec "TEMPHUD_FULLPATH);
-		Cmd_TokenizeString("cfg_load "TEMPHUD_FULLPATH);
-		Cmd_Exec_f();
-
-		// delete temp config with hud_* settings
-		if ((tempfile = fopen(fullname, "rb")) && (fclose(tempfile) != EOF))
-			unlink(fullname);
-
-		autohud.active = false;
-		return;
-	}
-}
-
-void OnAutoHudChange(cvar_t *var, char *value, qbool *cancel) {
-	HUD_AutoLoad_MVD(Q_atoi(value));
-}
-
 // Is run when a new map is loaded.
 void HUD_NewMap() {
 #if defined(WITH_PNG)
 	HUD_NewRadarMap();
 #endif // WITH_PNG
-
-	autohud_loaded = false;
 }
 
 #define HUD_SHOW_ONLY_IN_TEAMPLAY		1
@@ -7202,10 +7086,6 @@ void CommonDraw_Init(void)
     Cvar_Register (&hud_digits_trim);
     Cvar_ResetCurrentGroup();
 
-	Cvar_SetCurrentGroup(CVAR_GROUP_MVD);
-	Cvar_Register (&mvd_autohud);
-	Cvar_ResetCurrentGroup();
-
     // init HUD STAT table
     for (i=0; i < MAX_CL_STATS; i++)
         hud_stats[i] = 0;
@@ -7218,8 +7098,6 @@ void CommonDraw_Init(void)
     hud_stats[STAT_CELLS]   = 100;
     hud_stats[STAT_ACTIVEWEAPON] = 32;
     hud_stats[STAT_ITEMS] = 0xffffffff - IT_ARMOR2 - IT_ARMOR1;
-
-	autohud.active = 0;
 
     // init gameclock
 	HUD_Register("gameclock", NULL, "Shows current game time (hh:mm:ss).",

@@ -596,7 +596,7 @@ void FS_SetGamedir (char *dir)
 
 	if (!strcmp(com_gamedirfile, dir))
 		return;		// Still the same.
-	
+
 	strlcpy (com_gamedirfile, dir, sizeof(com_gamedirfile));
 
 	// Free up any current game dir info.

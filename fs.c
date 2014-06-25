@@ -758,9 +758,9 @@ void FS_InitFilesystemEx( qbool guess_cwd ) {
 	if (com_homedir[0])
 	{
 #ifdef _WIN32
-		strlcat(com_homedir, "/ezQuake", sizeof(com_homedir));
+		strlcat(com_homedir, "/Classic Fortress", sizeof(com_homedir));
 #else
-		strlcat(com_homedir, "/.ezquake", sizeof(com_homedir));
+		strlcat(com_homedir, "/.cfortress", sizeof(com_homedir));
 #endif
 		Com_Printf("Using home directory \"%s\"\n", com_homedir);
 	}
@@ -799,6 +799,8 @@ void FS_InitFilesystemEx( qbool guess_cwd ) {
 		i = COM_CheckParm ("+gamedir");
 	if (i && i < COM_Argc() - 1)
 		FS_SetGamedir (COM_Argv(i + 1));
+	else
+		FS_SetGamedir ("fortress");
 }
 
 void FS_InitFilesystem( void ) {

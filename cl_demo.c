@@ -2223,7 +2223,7 @@ static void CL_WriteDemoPimpMessage(void)
 
 	snprintf (pimpmessage, sizeof(pimpmessage), "\n%s\n%s\n%s\n",
 		border,
-		"\x1d\x1e\x1e\x1e\x1e\x1e\x1e Recorded by ezQuake \x1e\x1e\x1e\x1e\x1e\x1e\x1e\x1f",
+		"\x1d\x1e\x1e\x1e\x1e\x1e\x1e Recorded by Classic Fortress \x1e\x1e\x1e\x1e\x1e\x1e\x1e\x1f",
 		border
 	);
 
@@ -3171,7 +3171,7 @@ void CL_Demo_DumpBenchmarkResult(int frames, float timet)
 
 	fputs(va("\t<system>\n\t\t<os>%s</os>\n\t\t<hardware>%s</hardware>\n\t</system>\n", QW_PLATFORM, SYSINFO_GetString()), f);
 
-	fputs(va("\t<client>\n\t\t<name>ezQuake</name><version>%s</version>\n"
+	fputs(va("\t<client>\n\t\t<name>Classic Fortress</name><version>%s</version>\n"
 		"\t\t<configuration>%s</configuration><rendering>%s</rendering>\n\t</client>\n",
 		VersionString(), QW_CONFIGURATION, QW_RENDERER), f);
 //FIXME width/height doesnt get set, remove vid_mode/r_mode... Is this function used??

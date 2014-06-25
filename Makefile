@@ -326,9 +326,9 @@ endif
 ### Targets ###
 
 ifdef CONFIG_WINDOWS
-    TARG_c := ezquake.exe
+    TARG_c := cfortress.exe
 else
-    TARG_c := ezquake-$(LSYS)-$(CPU)
+    TARG_c := cfortress-$(LSYS)-$(CPU)
 endif
 
 all: $(TARG_c)
@@ -347,7 +347,7 @@ else
 endif
 
 # Temporary build directories
-BUILD_c := .ezquake
+BUILD_c := .cfortress
 
 # Rewrite paths to build directories
 OBJS_c := $(patsubst %,$(BUILD_c)/%,$(OBJS_c))

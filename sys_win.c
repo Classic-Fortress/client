@@ -559,7 +559,7 @@ void WinCheckOSInfo(void)
 		Sys_Error ("Couldn't get OS info");
 
 	if (vinfo.dwPlatformId != VER_PLATFORM_WIN32_NT || vinfo.dwMajorVersion < 5 || (vinfo.dwMajorVersion == 5 && vinfo.dwMinorVersion < 1))
-		Sys_Error ("ezQuake requires at least Windows XP.");
+		Sys_Error ("Classic Fortress requires at least Windows XP.");
 }
 
 void Sys_Init_ (void) 
@@ -904,9 +904,9 @@ qbool WinCheckQWURL(void)
 	// Instead of creating a completly custom messagebox (which is a major pain)
 	// just show a normal one, but replace the text on the buttons using event hooking.
 	retval = MsgBoxEx(NULL, 
-					"The current ezQuake client is not associated with the qw:// protocol,\n"
-					"which lets you launch ezQuake by opening qw:// URLs (.qtv files).\n\n"
-					"Do you want to associate ezQuake with the qw:// protocol?",
+					"The current Classic Fortress client is not associated with the qw:// protocol,\n"
+					"which lets you launch Classic Fortress by opening qw:// URLs (.qtv files).\n\n"
+					"Do you want to associate Classic Fortress with the qw:// protocol?",
 					"QW URL Protocol", QWURLProtocolButtonsHookProc, MB_YESNOCANCEL | MB_ICONWARNING);
 
 	switch (retval)

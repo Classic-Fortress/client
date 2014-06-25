@@ -1553,7 +1553,7 @@ void CL_ConnectionlessPacket (void)
 					Com_Printf ("===========================\n");
 					Com_Printf ("Invalid localid on command packet received from local host. "
 						"\n|%s| != |%s|\n"
-						"You may need to reload your server browser and ezQuake.\n",
+						"You may need to reload your server browser and Classic Fortress.\n",
 						s, localid.string);
 					Com_Printf ("===========================\n");
 					Cvar_Set(&localid, "");
@@ -1904,7 +1904,7 @@ void CL_InitLocal (void)
 	Cvar_ForceSet (&cl_cmdline, com_args_original);
 	Cvar_ResetCurrentGroup();
 
-	snprintf(st, sizeof(st), "ezQuake %i", REVISION);
+	snprintf(st, sizeof(st), "Classic Fortress %i", REVISION);
 
 	if (COM_CheckParm ("-norjscripts") || COM_CheckParm ("-noscripts"))
 		Cvar_SetValue (&allow_scripts, 0);
@@ -2922,9 +2922,9 @@ void CL_UpdateCaption(qbool force)
 	if (!cl_window_caption.value)
 	{
 		if (!cls.demoplayback && (cls.state == ca_active))
-			snprintf(str, sizeof(str), "ezQuake: %s", cls.servername);
+			snprintf(str, sizeof(str), "Classic Fortress: %s", cls.servername);
 		else
-			snprintf(str, sizeof(str), "ezQuake");
+			snprintf(str, sizeof(str), "Classic Fortress");
 	}
 	else
 	{

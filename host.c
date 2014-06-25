@@ -628,9 +628,9 @@ void Host_Init (int argc, char **argv, int default_memsize)
 	Com_Printf("http://ezquake.sourceforge.net\n");
 	Com_Printf("\n");
 //	Com_Printf(Host_PrintBars("ezQuake\x9c" "SourceForge\x9c" "net", 38));
-	Com_Printf("ezQuake %s\n", VersionStringColour());
+	Com_Printf("Classic Fortress %s\n", VersionStringColour());
 	Com_Printf("\n");
-	Com_Printf(Host_PrintBars("&c1e1ezQuake Initialized&r", 38));
+	Com_Printf(Host_PrintBars("&c1e1Classic Fortress Initialized&r", 38));
 	Com_Printf("\n");
 	Com_Printf("Type /help to access the manual.\nUse /describe for help on commands.\n\n", VersionString());
 
@@ -656,7 +656,7 @@ void Host_Init (int argc, char **argv, int default_memsize)
 			// Check if the running exe is the one associated with the qw:// protocol.
 			Com_PrintVerticalBar(INITIAL_CON_WIDTH);
 			Com_Printf("\n");
-			Com_Printf("ezQuake is not associated with the ");
+			Com_Printf("Classic Fortress is not associated with the ");
 			Com_Printf("\x02QW:// protocol. ");
 			Com_Printf("Register it using"); 
 			Com_Printf("\x02/register_qwurl_protocol\n");

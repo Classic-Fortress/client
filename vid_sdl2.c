@@ -46,7 +46,7 @@
 #include "gl_model.h"
 #include "gl_local.h"
 
-#define	WINDOW_CLASS_NAME	"ezQuake"
+#define	WINDOW_CLASS_NAME	"Classic Fortress"
 
 static void in_raw_callback(cvar_t *var, char *value, qbool *cancel);
 static void in_grab_windowed_mouse_callback(cvar_t *var, char *value, qbool *cancel);

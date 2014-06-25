@@ -7,13 +7,13 @@
 	{
 		BLOCK "040904B0"
 		{
-			VALUE "ProductName", "ezQuake"
+			VALUE "ProductName", "Classic Fortress"
 			VALUE "ProductVersion", VERSION_NUMBER " Build " VERSION
-			VALUE "FileDescription", "ezQuake v" VERSION_NUMBER " - QuakeWorld(r) Today"
+			VALUE "FileDescription", "Classic Fortress v" VERSION_NUMBER " - QuakeWorld(r) Today"
 			VALUE "FileVersion", VERSION_NUMBER
 			VALUE "CompanyName", "The ezQuake Developers"
-			VALUE "OriginalFileName", "ezquake.exe"
-			VALUE "InternalName", "ezquake"
+			VALUE "OriginalFileName", "cfortress.exe"
+			VALUE "InternalName", "cfortress"
 		}
 	}
 

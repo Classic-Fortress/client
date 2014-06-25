@@ -45,7 +45,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "version.h"
 #include "qsound.h"
 #include "keys.h"
-#include "config_manager.h"
 
 double		curtime;
 
@@ -569,21 +568,7 @@ void Host_Init (int argc, char **argv, int default_memsize)
 	NET_Init ();
 
 	Commands_For_Configs_Init ();
-	ConfigManager_Init();
-	ResetBinds();
-
-	i = COM_CheckParm("+cfg_load");
-
-	if (i && (i + 1 < COM_Argc())) {
-		cfg_name = COM_Argv(i + 1);
-	}
-	else {
-		cfg_name = MAIN_CONFIG_FILENAME;
-	}
-	snprintf(cfg, sizeof(cfg), "%s", cfg_name);
-	COM_ForceExtensionEx (cfg, ".cfg", sizeof (cfg));
-	Cbuf_AddText(va("cfg_load %s\n", cfg));
-	Cbuf_Execute();
+	Host_LoadConfiguration ();
 
 	Cbuf_AddEarlyCommands ();
 	Cbuf_Execute ();
@@ -648,11 +633,6 @@ void Host_Init (int argc, char **argv, int default_memsize)
 	Com_Printf(Host_PrintBars("&c1e1ezQuake Initialized&r", 38));
 	Com_Printf("\n");
 	Com_Printf("Type /help to access the manual.\nUse /describe for help on commands.\n\n", VersionString());
-
-	if ((vf = FS_OpenVFS("autoexec.cfg", "rb", FS_ANY))) {
-		Cbuf_AddText ("exec autoexec.cfg\n\n");
-		VFS_CLOSE(vf);
-	}
 
 	Cmd_StuffCmds_f ();		// process command line arguments
 	Cbuf_AddText ("cl_warncmd 1\n");
@@ -738,15 +718,82 @@ void Host_Shutdown (void)
 #endif
 }
 
+/*
+===============
+Host_WriteConfiguration
+
+Writes key bindings and archived cvars to config.cfg
+===============
+*/
+void Host_WriteConfiguration (void)
+{
+        FILE    *f;  
+
+        if (host_initialized)
+        {    
+                f = fopen (va("%s/config.cfg",com_gamedir), "w");
+                if (!f) 
+                {    
+                        Con_Printf ("Couldn't write config.cfg.\n");
+                        return;
+                }    
+     
+                Key_WriteBindings (f); 
+                Cvar_WriteVariables (f); 
+
+                fclose (f); 
+        }    
+}
+
+void Host_LoadConfiguration (void)
+{
+	char fn[MAX_OSPATH];
+	vfsfile_t *f;
+	qbool load_qw_config = false;
+
+	Cbuf_AddText ("cl_warncmd 0\n");
+
+	sprintf(fn, "%s/%s", com_gamedir, "default.cfg");
+	if ((f = FS_OpenVFS(fn, "rb", FS_ANY)) != NULL) {
+		VFS_CLOSE(f);
+		Cbuf_AddText("exec default.cfg\n");
+	} else {
+		if ((f = FS_OpenVFS("qw/default.cfg", "rb", FS_ANY)) != NULL) {
+			VFS_CLOSE(f);
+			Cbuf_AddText("exec qw/default.cfg\n");
+			load_qw_config = true;
+		}
+	}
+
+	sprintf(fn, "%s/%s", com_gamedir, "config.cfg");
+	if ((f = FS_OpenVFS(fn, "rb", FS_ANY)) != NULL) {
+		VFS_CLOSE(f);
+		Cbuf_AddText("exec config.cfg\n");
+	} else if (load_qw_config) {
+		if ((f = FS_OpenVFS("qw/config.cfg", "rb", FS_ANY)) != NULL) {
+			VFS_CLOSE(f);
+			Cbuf_AddText("exec qw/config.cfg\n");
+		}
+	}
+
+	sprintf(fn, "%s/%s", com_gamedir, "autoexec.cfg");
+	if ((f = FS_OpenVFS(fn, "rb", FS_ANY)) != NULL) {
+		VFS_CLOSE(f);
+		Cbuf_AddText("exec autoexec.cfg\n");
+	}
+
+	Cbuf_AddText ("cl_warncmd 1\n");
+}
+
 void Host_Quit (void)
 {
 	// execute user's trigger
 	TP_ExecTrigger ("f_exit");
 	Cbuf_Execute();
-	
-	// save config (conditional)
-	Config_QuitSave();
 
+	// always save on exit
+	Host_WriteConfiguration ();
+	
 	// turn off
 	Host_Shutdown ();
 	Sys_Quit ();

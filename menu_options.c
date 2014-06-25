@@ -148,7 +148,6 @@ void GFXPresetToggle(qbool back) {
 
 const char* amf_tracker_frags_enum[] = {"off", "related", "all" };
 
-const char* mvdautohud_enum[] = { "off", "simple", "customizable" };
 const char* mvdautotrack_enum[] = { "off", "auto", "custom", "multitrack", "simple" };
 const char* funcharsmode_enum[] = { "ctrl+key", "ctrl+y" };
 const char* ignoreopponents_enum[] = { "off", "always", "on match" };
@@ -559,168 +558,6 @@ qbool CT_Opt_System_Mouse_Event(const mouse_state_t *ms)
 
 // </SYSTEM>
 
-// *********
-// <CONFIG>
-
-// Menu Options Config Page Mode
-
-filelist_t configs_filelist;
-CEditBox filenameeb;
-
-enum { MOCPM_SETTINGS, MOCPM_CHOOSECONFIG, MOCPM_CHOOSESCRIPT, MOCPM_ENTERFILENAME } MOpt_configpage_mode = MOCPM_SETTINGS;
-
-extern cvar_t cfg_backup, cfg_save_aliases, cfg_save_binds, cfg_save_cmdline,
-	cfg_save_cmds, cfg_save_cvars, cfg_save_unchanged, cfg_save_userinfo, cfg_use_home, cfg_save_onquit, cfg_use_gamedir, cfg_legacy_exec;
-
-void MOpt_ImportConfig(void) {
-	MOpt_configpage_mode = MOCPM_CHOOSECONFIG;
-	
-	// hope few doubled trinary operator won't hurt your brains
-	if (cfg_use_home.integer)
-		FL_SetCurrentDir(&configs_filelist, (cfg_use_gamedir.integer) ? va("%s/%s", com_homedir, (strcmp(com_gamedirfile, "qw") == 0) ? "" : com_gamedirfile) : com_homedir);
-    else
-		FL_SetCurrentDir(&configs_filelist, (cfg_use_gamedir.integer) ? va("%s/%s/configs", com_basedir, (strcmp(com_gamedirfile, "qw") == 0) ? "ezquake" : com_gamedirfile) : va("%s/ezquake/configs", com_basedir));
-}
-void MOpt_ExportConfig(void) {
-	MOpt_configpage_mode = MOCPM_ENTERFILENAME;
-	filenameeb.text[0] = 0;
-	filenameeb.pos = 0;
-}
-
-void MOpt_LoadScript(void) {
-	MOpt_configpage_mode = MOCPM_CHOOSESCRIPT;
-	FL_SetCurrentDir(&configs_filelist, "./ezquake/cfg");
-}
-
-void MOpt_CfgSaveAllOn(void) {
-	S_LocalSound("misc/basekey.wav");
-	Cvar_SetValue(&cfg_backup, 1);
-	Cvar_SetValue(&cfg_legacy_exec, 1);
-	Cvar_SetValue(&cfg_save_aliases, 1);
-	Cvar_SetValue(&cfg_save_binds, 1);
-	Cvar_SetValue(&cfg_save_cmdline, 1);
-	Cvar_SetValue(&cfg_save_cmds, 1);
-	Cvar_SetValue(&cfg_save_cvars, 1);
-	Cvar_SetValue(&cfg_save_unchanged, 1);
-	Cvar_SetValue(&cfg_save_userinfo, 2);
-}
-
-const char* MOpt_legacywrite_enum[] = { "off", "non-qw dir frontend.cfg", "also config.cfg", "non-qw config.cfg" };
-const char* MOpt_userinfo_enum[] = { "off", "all but player", "all" };
-
-void MOpt_LoadCfg(void) {
-	S_LocalSound("misc/basekey.wav");
-	Cbuf_AddText("cfg_load\n");
-}
-void MOpt_SaveCfg(void) { 
-	S_LocalSound("doors/runeuse.wav");
-	Cbuf_AddText("cfg_save\n");
-}
-
-settings_page settconfig;
-
-#define INPUTBOXWIDTH 300
-#define INPUTBOXHEIGHT 48
-
-void MOpt_FilenameInputBoxDraw(int x, int y, int w, int h)
-{
-	UI_DrawBox(x + (w-INPUTBOXWIDTH) / 2, y + (h-INPUTBOXHEIGHT) / 2, INPUTBOXWIDTH, INPUTBOXHEIGHT);
-	UI_Print_Center(x, y + h/2 - 8, w, "Enter the config file name", false);
-	CEditBox_Draw(&filenameeb, x + (w-INPUTBOXWIDTH)/2 + 16, y + h/2 + 8, true);
-}
-
-qbool MOpt_FileNameInputBoxKey(int key)
-{
-	CEditBox_Key(&filenameeb, key, key);
-	return true;
-}
-
-char *MOpt_FileNameInputBoxGetText(void)
-{
-	return filenameeb.text;
-}
-
-void CT_Opt_Config_Draw(int x, int y, int w, int h, CTab_t *tab, CTabPage_t *page)
-{
-	switch (MOpt_configpage_mode) {
-	case MOCPM_SETTINGS:
-		Settings_Draw(x,y,w,h,&settconfig);
-		break;
-
-	case MOCPM_CHOOSESCRIPT:
-	case MOCPM_CHOOSECONFIG:
-		FL_Draw(&configs_filelist, x,y,w,h);
-		break;
-
-	case MOCPM_ENTERFILENAME:
-		MOpt_FilenameInputBoxDraw(x,y,w,h);
-		break;
-	}
-}
-
-int CT_Opt_Config_Key(int key, wchar unichar, CTab_t *tab, CTabPage_t *page)
-{
-	switch (MOpt_configpage_mode) {
-	case MOCPM_SETTINGS:
-		return Settings_Key(&settconfig, key, unichar);
-		break;
-
-	case MOCPM_CHOOSECONFIG:
-		if (key == K_ENTER || key == K_MOUSE1) {
-			Cbuf_AddText(va("cfg_load \"%s\"\n", COM_SkipPath(FL_GetCurrentEntry(&configs_filelist)->name)));
-			MOpt_configpage_mode = MOCPM_SETTINGS;
-			return true;
-		} else if (key == K_ESCAPE || key == K_MOUSE2) {
-			MOpt_configpage_mode = MOCPM_SETTINGS;
-			return true;
-		} else return FL_Key(&configs_filelist, key);
-
-	case MOCPM_CHOOSESCRIPT:
-		if (key == K_ENTER || key == K_MOUSE1) {
-			Cbuf_AddText(va("exec \"cfg/%s\"\n", COM_SkipPath(FL_GetCurrentEntry(&configs_filelist)->name)));
-			MOpt_configpage_mode = MOCPM_SETTINGS;
-			return true;
-		} else if (key == K_ESCAPE || key == K_MOUSE2) {
-			MOpt_configpage_mode = MOCPM_SETTINGS;
-			return true;
-		} else return FL_Key(&configs_filelist, key);
-
-	case MOCPM_ENTERFILENAME:
-		if (key == K_ENTER || key == K_MOUSE1) {
-			Cbuf_AddText(va("cfg_save \"%s\"\n", MOpt_FileNameInputBoxGetText()));
-			MOpt_configpage_mode = MOCPM_SETTINGS;
-			return true;
-        } else if (key == K_ESCAPE || key == K_MOUSE2) {
-			MOpt_configpage_mode = MOCPM_SETTINGS;
-			return true;
-		} else return MOpt_FileNameInputBoxKey(key);
-	}
-
-	return false;
-}
-
-void OnShow_SettConfig(void) { Settings_OnShow(&settconfig); }
-
-qbool CT_Opt_Config_Mouse_Event(const mouse_state_t *ms)
-{
-    if (MOpt_configpage_mode == MOCPM_CHOOSECONFIG || MOpt_configpage_mode == MOCPM_CHOOSESCRIPT) {
-        if (FL_Mouse_Event(&configs_filelist, ms))
-            return true;
-        else if (ms->button_up == 1 || ms->button_up == 2)
-            return CT_Opt_Config_Key(K_MOUSE1 - 1 + ms->button_up, 0, &options_tab, options_tab.pages + OPTPG_CONFIG);
-
-        return true;
-    }
-    else
-    {
-        return Settings_Mouse_Event(&settconfig, ms);
-    }
-}
-
-
-// </CONFIG>
-// *********
-
 CTabPage_Handlers_t options_misc_handlers = {
 	CT_Opt_Settings_Draw,
 	CT_Opt_Settings_Key,
@@ -761,13 +598,6 @@ CTabPage_Handlers_t options_system_handlers = {
 	CT_Opt_System_Key,
 	OnShow_SettSystem,
 	CT_Opt_System_Mouse_Event
-};
-
-CTabPage_Handlers_t options_config_handlers = {
-	CT_Opt_Config_Draw,
-	CT_Opt_Config_Key,
-	OnShow_SettConfig,
-	CT_Opt_Config_Mouse_Event
 };
 
 void Menu_Options_Key(int key, wchar unichar) {
@@ -1035,7 +865,6 @@ setting settview_arr[] = {
 	
 	ADDSET_SEPARATOR("Multiview Demos"),
 	ADDSET_ACTION	("Toggle Autotrack", CL_Autotrack_f, "Toggle auto-tracking of the best player"),
-	ADDSET_NAMED	("Autohud", mvd_autohud, mvdautohud_enum),
 	ADDSET_NAMED	("Autotrack Type", mvd_autotrack, mvdautotrack_enum),
 	ADDSET_ADVANCED_SECTION(),
 	ADDSET_BOOL		("Autotrack Lock Team", mvd_autotrack_lockteam),
@@ -1246,41 +1075,6 @@ setting settsystem_arr[] = {
 	ADDSET_BASIC_SECTION(),
 };
 
-// CONFIG TAB
-setting settconfig_arr[] = {
-	ADDSET_BOOL		("Advanced Options", menu_advanced),
-	ADDSET_ACTION	("Go To Console", Con_ToggleConsole_f, "Opens the console."),
-
-    ADDSET_SEPARATOR("Load & Save"),
-    ADDSET_ACTION("Reload Settings", MOpt_LoadCfg, "Reset the settings to last saved configuration."),
-    ADDSET_ACTION("Save Settings", MOpt_SaveCfg, "Save the settings"),
-	ADDSET_ADVANCED_SECTION(),
-    ADDSET_BOOL("Save To Profile Dir", cfg_use_home),
-	ADDSET_BOOL("Save To Mod Directory", cfg_use_gamedir),
-    ADDSET_BASIC_SECTION(),
-	ADDSET_ACTION("Reset To Defaults", DefaultConfig, "Reset all settings to defaults"),
-
-    
-	ADDSET_SEPARATOR("Export & Import"),
-	ADDSET_ACTION("Load Script", MOpt_LoadScript, "Find and load scripts here."),
-	ADDSET_ACTION("Import config ...", MOpt_ImportConfig, "You can load a configuration file from here."),
-	ADDSET_ACTION("Export config ...", MOpt_ExportConfig, "Will export your current configuration to a file."),
-	
-	ADDSET_SEPARATOR("Config Saving Options"),
-    ADDSET_ACTION("Reset Saving Options", MOpt_CfgSaveAllOn, "Configuration saving settings will be reset to defaults."),
-    ADDSET_BOOL("Auto Save On Quit", cfg_save_onquit),
-	ADDSET_BOOL("Save Unchanged Opt.", cfg_save_unchanged),
-	ADDSET_ADVANCED_SECTION(),
-	ADDSET_BOOL("Backup Old File", cfg_backup),
-	ADDSET_NAMED("Load Legacy", cfg_legacy_exec, MOpt_legacywrite_enum),
-	ADDSET_BOOL("Aliases", cfg_save_aliases),
-	ADDSET_BOOL("Binds", cfg_save_binds),
-	ADDSET_BOOL("Cmdline", cfg_save_cmdline),
-	ADDSET_BOOL("Init Commands", cfg_save_cmds),
-	ADDSET_BOOL("Variables", cfg_save_cvars),
-	ADDSET_NAMED("Userinfo", cfg_save_userinfo, MOpt_userinfo_enum)
-};
-
 qbool Menu_Options_Mouse_Event(const mouse_state_t *ms)
 {
 	mouse_state_t nms = *ms;
@@ -1309,7 +1103,6 @@ void Menu_Options_Init(void) {
 	Settings_Page_Init(settplayer, settplayer_arr);
 	Settings_Page_Init(settbinds, settbinds_arr);
 	Settings_Page_Init(settsystem, settsystem_arr);
-	Settings_Page_Init(settconfig, settconfig_arr);
 
 	Cvar_SetCurrentGroup(CVAR_GROUP_MENU);
 	Cvar_Register(&menu_advanced);
@@ -1322,6 +1115,5 @@ void Menu_Options_Init(void) {
 	CTab_AddPage(&options_tab, "Controls", OPTPG_BINDS, &options_controls_handlers);
 	CTab_AddPage(&options_tab, "Misc", OPTPG_MISC, &options_misc_handlers);
 	CTab_AddPage(&options_tab, "System", OPTPG_SYSTEM, &options_system_handlers);
-	CTab_AddPage(&options_tab, "Config", OPTPG_CONFIG, &options_config_handlers);
 	CTab_SetCurrentId(&options_tab, OPTPG_PLAYER);
 }

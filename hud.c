@@ -1473,13 +1473,6 @@ void HUD_Draw(void)
 		}
 	}
 
-	if (mvd_autohud.integer && !autohud_loaded)
-	{
-		HUD_AutoLoad_MVD((int) mvd_autohud.value);
-		Com_DPrintf("Loading AUTOHUD...\n");
-		autohud_loaded = true;
-	}
-
     if (scr_newHud.value == 0)
 	{
 		return;

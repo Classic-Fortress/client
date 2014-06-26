@@ -872,7 +872,7 @@ void Cvar_Seta_f (void)
 		var = Cvar_Create (var_name, Cmd_Argv(2), 0);
 	}
 
-	var->flags |= CVAR_ARCHIVE;
+	var->flags |= CVAR_USER_ARCHIVE;
 }
 
 void Cvar_Set_tp_f (void)
@@ -1354,7 +1354,7 @@ void Cvar_WriteVariables (FILE *f)
 	cvar_t  *var;
     
 	for (var = cvar_vars ; var ; var = var->next)
-		if (var->modified && !(var->flags & CVAR_ROM) && (var->flags & CVAR_ARCHIVE))
+		if (var->flags & CVAR_USER_ARCHIVE || (var->modified && !(var->flags & CVAR_ROM) && (var->flags & CVAR_ARCHIVE)))
 			fprintf (f, "seta %s \"%s\"\n", var->name, var->string);
 }
 

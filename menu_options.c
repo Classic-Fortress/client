@@ -261,6 +261,7 @@ setting settvideo_arr[] = {
 
 	ADDSET_SEPARATOR("Video"),
 	ADDSET_NUMBER	("Gamma", v_gamma, 0.1, 2.0, 0.1),
+	ADDSET_NUMBER	("Brightness", gl_brightness, 0.0, 1.0, 0.1),
 	ADDSET_CUSTOM("Resolution", ResolutionRead, ResolutionToggle, "Change your screen resolution."),
 	ADDSET_BOOL("Vertical Sync", r_swapInterval),
 	ADDSET_CUSTOM("Fullscreen", FullScreenRead, FullScreenToggle, "Toggle between fullscreen and windowed mode."),

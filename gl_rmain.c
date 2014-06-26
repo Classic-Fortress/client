@@ -216,6 +216,7 @@ cvar_t gl_motion_blur_hurt                 = {"gl_motion_blur_hurt", "0.5"};
 cvar_t gl_motion_blur_dead                 = {"gl_motion_blur_dead", "0.5"};
 cvar_t gl_gammacorrection                  = {"gl_gammacorrection", "0", CVAR_LATCH};
 cvar_t gl_modulate                         = {"gl_modulate", "1"};
+cvar_t gl_brightness                       = {"gl_brightness", "0", CVAR_LATCH};
 cvar_t gl_outline                          = {"gl_outline", "0"};
 cvar_t gl_outline_width                    = {"gl_outline_width", "2"};
 
@@ -1978,6 +1979,7 @@ void R_Init(void)
 	Cvar_Register (&gl_finish);
 	Cvar_Register (&gl_gammacorrection);
 	Cvar_Register (&gl_modulate);
+	Cvar_Register (&gl_brightness);
 
 	Cvar_Register (&gl_outline);
 	Cvar_Register (&gl_outline_width);

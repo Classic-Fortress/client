@@ -362,6 +362,7 @@ void R_BuildLightMap (msurface_t *surf, byte *dest, int stride) {
 	byte *lightmap;
 	unsigned scale, *bl;
 	qbool fullbright = false;
+	unsigned add = 32768 * bound(0, gl_brightness.value, 1);
 
 	surf->cached_dlight = !!numdlights;
 
@@ -415,9 +416,9 @@ void R_BuildLightMap (msurface_t *surf, byte *dest, int stride) {
 		scale *= bound(0.5, gl_modulate.value, 3);
 		for (j = smax; j; j--) {
 			unsigned r, g, b, m;
-			r = bl[0] * scale;
-			g = bl[1] * scale;
-			b = bl[2] * scale;
+			r = (bl[0] + add) * scale;
+			g = (bl[1] + add) * scale;
+			b = (bl[2] + add) * scale;
 			m = max(r, g);
 			m = max(m, b);
 			if (m > ((255<<16) + (1<<15))) {

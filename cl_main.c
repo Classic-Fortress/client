@@ -2226,14 +2226,16 @@ void OnCFGrenTimersChange (cvar_t *var, char *value, qbool *cancel)
 	}
 
 	Info_SetValueForKey (cls.userinfo, "nt", "", MAX_INFO_STRING);
-	if (newvalue == 0){
-		nt = "1";
-		CL_UserinfoChanged("nt", nt);
+	if (newvalue == 1){
+		nt = "0";
 	}
 	else if (newvalue == 2){
 		nt = "2";
-		CL_UserinfoChanged("nt", nt);
 	}
+	else {
+		nt = "1";
+	}
+	CL_UserinfoChanged("nt", nt);
 }
 
 void OnCFAutoIdChange (cvar_t *var, char *value, qbool *cancel)

@@ -2,3 +2,6 @@
 ezquake
 ezquake.exe
 ezquake-*-*
+cfortress-linux-x86_64
+make-windows.sh
+mingw32-libs/

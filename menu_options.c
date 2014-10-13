@@ -66,8 +66,31 @@ static qbool InvertMouse(void) { return m_pitch.value < 0; }
 const char* InvertMouseRead(void) { return InvertMouse() ? "on" : "off"; }
 void InvertMouseToggle(qbool back) { Cvar_SetValue(&m_pitch, -m_pitch.value); }
 
+static int GrenTimers(void) { return cf_grentimers.value; }
+const char* GrenTimersRead(void) {
+	if (GrenTimers() == 1) {
+		return "on";
+	}
+	else if (GrenTimers() == 2) {
+		return "no timer sound";
+	}
+	return "off";
+}
+void GrenTimersToggle() {
+	int newvalue;
+
+	if (cf_grentimers.value == 2) {
+		newvalue = 0;
+	}
+	else {
+		newvalue = cf_grentimers.value + 1;
+	}
+
+	Cvar_SetValue(&cf_grentimers, newvalue);
+}
+
 // GAME SETTINGS TAB
-extern cvar_t name, cf_sensitivity, in_raw, s_volume, cf_fov;
+extern cvar_t name, cf_sensitivity, in_raw, s_volume, cf_fov, cf_grentimers;
 settings_page settgame;
 setting settgame_arr[] = {
 	ADDSET_SEPARATOR("Game Settings"),
@@ -77,6 +100,7 @@ setting settgame_arr[] = {
 	ADDSET_BOOL	("Raw mouse input", in_raw),
 	ADDSET_NUMBER	("Volume", s_volume, 0, 1, 0.05),
 	ADDSET_NUMBER   ("Field of View", cf_fov, 40, 140, 2),
+	ADDSET_CUSTOM   ("Grenade timers", GrenTimersRead, GrenTimersToggle, "Displays a grenade countdown."),
 };
 
 void CT_Opt_Game_Draw (int x, int y, int w, int h, CTab_t *tab, CTabPage_t *page) {

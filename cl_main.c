@@ -99,6 +99,8 @@ cvar_t  cl_pext_floatcoords  = {"cl_pext_floatcoords", "1"};
 cvar_t cl_pext_alpha = {"cl_pext_alpha", "1"};
 #endif
 
+void OnCFGrenTimersChange (cvar_t *var, char *value, qbool *cancel);
+cvar_t	cf_grentimers = { "cf_grentimers", "1", CVAR_ARCHIVE, OnCFGrenTimersChange};
 cvar_t	cl_sbar		= {"cl_sbar", "0"};
 cvar_t	cl_hudswap	= {"cl_hudswap", "0"};
 cvar_t	cl_maxfps	= {"cl_maxfps", "0"};

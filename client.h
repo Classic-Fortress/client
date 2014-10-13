@@ -628,6 +628,9 @@ extern cvar_t r_shaftalpha;
 
 extern cvar_t cl_restrictions;
 
+// Classic Fortress cvars
+extern	cvar_t	cf_grentimers;
+
 // ZQuake cvars
 extern cvar_t	cl_warncmd;
 extern	cvar_t	cl_shownet;

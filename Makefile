@@ -39,7 +39,7 @@ RCFLAGS_c :=
 LDFLAGS_c :=
 
 ifdef CONFIG_WINDOWS
-    LDFLAGS_c += -mwindows
+    LDFLAGS_c += -mwindows -Lmingw32-libs/lib
 
     # Mark images as DEP and ASLR compatible on x86 Windows
     ifeq ($(CPU),x86)

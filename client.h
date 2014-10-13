@@ -630,6 +630,7 @@ extern cvar_t cl_restrictions;
 
 // Classic Fortress cvars
 extern	cvar_t	cf_grentimers;
+extern	cvar_t	cf_autoid;
 
 // ZQuake cvars
 extern cvar_t	cl_warncmd;

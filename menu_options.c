@@ -89,8 +89,34 @@ void GrenTimersToggle() {
 	Cvar_SetValue(&cf_grentimers, newvalue);
 }
 
+static int AutoId(void) { return cf_autoid.value; }
+const char* AutoIdRead(void) {
+	if (AutoId() == 1) {
+		return "on";
+	}
+	else if (AutoId() == 2) {
+		return "only friendlies";
+	}
+	else if (AutoId() == 3) {
+		return "only enemies";
+	}
+	return "off";
+}
+void AutoIdToggle() {
+	int newvalue;
+
+	if (cf_autoid.value == 3) {
+		newvalue = 0;
+	}
+	else {
+		newvalue = cf_autoid.value + 1;
+	}
+
+	Cvar_SetValue(&cf_autoid, newvalue);
+}
+
 // GAME SETTINGS TAB
-extern cvar_t name, cf_sensitivity, in_raw, s_volume, cf_fov, cf_grentimers;
+extern cvar_t name, cf_sensitivity, in_raw, s_volume, cf_fov, cf_grentimers, cf_autoid;
 settings_page settgame;
 setting settgame_arr[] = {
 	ADDSET_SEPARATOR("Game Settings"),
@@ -100,7 +126,9 @@ setting settgame_arr[] = {
 	ADDSET_BOOL	("Raw mouse input", in_raw),
 	ADDSET_NUMBER	("Volume", s_volume, 0, 1, 0.05),
 	ADDSET_NUMBER   ("Field of View", cf_fov, 40, 140, 2),
+	ADDSET_SEPARATOR("HUD Settings"),
 	ADDSET_CUSTOM   ("Grenade timers", GrenTimersRead, GrenTimersToggle, "Displays a grenade countdown."),
+	ADDSET_CUSTOM   ("Auto ID", AutoIdRead, AutoIdToggle, "Auto identifies targets."),
 };
 
 void CT_Opt_Game_Draw (int x, int y, int w, int h, CTab_t *tab, CTabPage_t *page) {

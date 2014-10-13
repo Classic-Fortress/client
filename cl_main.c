@@ -100,7 +100,9 @@ cvar_t cl_pext_alpha = {"cl_pext_alpha", "1"};
 #endif
 
 void OnCFGrenTimersChange (cvar_t *var, char *value, qbool *cancel);
+void OnCFAutoIdChange (cvar_t *var, char *value, qbool *cancel);
 cvar_t	cf_grentimers = { "cf_grentimers", "1", CVAR_ARCHIVE, OnCFGrenTimersChange};
+cvar_t	cf_autoid = { "cf_autoid", "1", CVAR_ARCHIVE, OnCFAutoIdChange};
 cvar_t	cl_sbar		= {"cl_sbar", "0"};
 cvar_t	cl_hudswap	= {"cl_hudswap", "0"};
 cvar_t	cl_maxfps	= {"cl_maxfps", "0"};
@@ -1782,6 +1784,8 @@ void CL_InitLocal (void)
 	#endif // WIN32
 
 	Cvar_SetCurrentGroup(CVAR_GROUP_SBAR);
+	Cvar_Register (&cf_grentimers);
+	Cvar_Register (&cf_autoid);
 	Cvar_Register (&cl_sbar);
 	Cvar_Register (&cl_hudswap);
 
@@ -2208,6 +2212,42 @@ void Cl_Reset_Min_fps_f(void)
 {
 	cls.min_fps = 9999;
 	CL_CalcFPS();
+}
+
+void OnCFGrenTimersChange (cvar_t *var, char *value, qbool *cancel)
+{
+	int newvalue = Q_atoi(value);
+	char *nt;
+
+	if (newvalue < 0 || newvalue > 2){
+		Com_Printf("Invalid cf_grentimers\n");
+		*cancel = true;
+		return;
+	}
+
+	Info_SetValueForKey (cls.userinfo, "nt", "", MAX_INFO_STRING);
+	if (newvalue == 0){
+		nt = "1";
+		CL_UserinfoChanged("nt", nt);
+	}
+	else if (newvalue == 2){
+		nt = "2";
+		CL_UserinfoChanged("nt", nt);
+	}
+}
+
+void OnCFAutoIdChange (cvar_t *var, char *value, qbool *cancel)
+{
+	int newvalue = Q_atoi(value);
+
+	if (newvalue < 0 || newvalue > 3){
+		Com_Printf("Invalid cf_autoid\n");
+		*cancel = true;
+		return;
+	}
+
+	Info_SetValueForKey (cls.userinfo, "ai", "", MAX_INFO_STRING);
+	CL_UserinfoChanged("ai", value);
 }
 
 void CL_QTVPoll (void);

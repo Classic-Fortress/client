@@ -472,7 +472,7 @@ void Cmd_Exec_f (void)
 		}
 	}
 	if (cl_warnexec.integer || developer.integer) {
-		Com_Printf("execing %s/%s\n", FS_Locate_GetPath(name), name);
+		Com_Printf("execing %s\n", name);
 	}
 
 	if (cbuf_current == &cbuf_svc) {

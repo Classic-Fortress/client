@@ -40,6 +40,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "mvd_utils.h"
 #ifndef CLIENTONLY
 #include "server.h"
+#include "sys/stat.h"
 #endif
 
 // TODO: Create states for demo_recording, demo_playback, and so on and put all related vars into these. Right now with global vars for everything is a mess. Also renaming some of the time vars to be less confusing is probably good. demotime, olddemotime, nextdemotime, prevtime...
@@ -2377,6 +2378,12 @@ void CL_Record_f (void)
 			// Open the demo file for writing.
 			strlcpy(nameext, Cmd_Argv(1), sizeof(nameext));
 			COM_ForceExtensionEx (nameext, ".qwd", sizeof (nameext));
+
+			// Create the demos dir if it doesn't exist.
+			struct stat sb;
+			if (stat(CL_DemoDirectory(), &sb) == -1) {
+			    mkdir(CL_DemoDirectory(), 0700);
+			}
 
 			// Get the path for the demo and try opening the file for writing.
 			snprintf (name, sizeof(name), "%s/%s", CL_DemoDirectory(), nameext);

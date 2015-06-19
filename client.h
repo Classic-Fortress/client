@@ -42,7 +42,7 @@ extern cvar_t cl_demospeed;
 #define ISPAUSED (cl.paused || (!cl_demospeed.value && cls.demoplayback))
 #define	MAX_PROJECTILES	32
 
-typedef struct 
+typedef struct
 {
 	char			name[16];
 	qbool			failedload;		// the name isn't a valid skin
@@ -55,7 +55,7 @@ typedef struct
 
 // player_state_t is the information needed by a player entity
 // to do move prediction and to generate a drawable entity
-typedef struct 
+typedef struct
 {
 	int			messagenum;		// All players won't be updated each frame.
 
@@ -86,7 +86,7 @@ typedef struct
 } player_state_t;
 
 #define	MAX_SCOREBOARDNAME	16
-typedef struct player_info_s 
+typedef struct player_info_s
 {
 	int		userid;
 	char	userinfo[MAX_INFO_STRING];
@@ -136,7 +136,7 @@ typedef struct player_info_s
 } player_info_t;
 
 
-typedef struct 
+typedef struct
 {
 	qbool		interpolate;
 	vec3_t		origin;
@@ -145,7 +145,7 @@ typedef struct
 } interpolate_t;
 
 
-typedef struct 
+typedef struct
 {
 	// Generated on client side.
 	usercmd_t			cmd;				// Cmd that generated the frame.
@@ -173,7 +173,7 @@ typedef struct demo_keyframe_s
 	// TODO : Add any state information needed to reproduce this frame.
 } demo_keyframe_t;
 
-typedef struct 
+typedef struct
 {
 	entity_state_t	baseline;
 	entity_state_t	current;
@@ -202,7 +202,7 @@ typedef struct
 
 #define CENT_TRAILDRAWN		1
 
-typedef struct 
+typedef struct
 {
 	int		destcolor[3];
 	int		percent;		// 0-256
@@ -259,7 +259,7 @@ ca_onserver,		// processing data lists, donwloading, etc
 ca_active			// everything is in, so frames can be rendered
 } cactive_t;
 
-typedef enum 
+typedef enum
 {
 	dl_none,
 	dl_model,
@@ -426,7 +426,7 @@ typedef struct
 	///	  bit mask containing which players the last demo message relates to. (32-bits, 32 players)
 	///	- If only a single player should receive the message (dem_single),
 	///	  this is a a 5-bit number containing the player number. (2^5 = 32 unique player numbers)
-	int			lastto;			
+	int			lastto;
 
 	int			lasttype;		///< The type of the last demo message.
 	qbool		findtrack;
@@ -631,6 +631,7 @@ extern cvar_t cl_restrictions;
 // Classic Fortress cvars
 extern	cvar_t	cf_grentimers;
 extern	cvar_t	cf_autoid;
+extern	cvar_t	cf_classtips;
 
 // ZQuake cvars
 extern cvar_t	cl_warncmd;

@@ -115,8 +115,28 @@ void AutoIdToggle() {
 	Cvar_SetValue(&cf_autoid, newvalue);
 }
 
+static int ClassTips(void) { return cf_classtips.value; }
+const char* ClassTipsRead(void) {
+	if (ClassTips() == 1) {
+		return "on";
+	}
+	return "off";
+}
+void ClassTipsToggle() {
+	int newvalue;
+
+	if (cf_classtips.value == 1) {
+		newvalue = 0;
+	}
+	else {
+		newvalue = 1;
+	}
+
+	Cvar_SetValue(&cf_classtips, newvalue);
+}
+
 // GAME SETTINGS TAB
-extern cvar_t name, cf_sensitivity, in_raw, s_volume, cf_fov, cf_grentimers, cf_autoid, cf_zoomfov, cf_zoomsteps;
+extern cvar_t name, cf_sensitivity, in_raw, s_volume, cf_fov, cf_grentimers, cf_autoid, cf_classtips, cf_zoomfov, cf_zoomsteps;
 settings_page settgame;
 setting settgame_arr[] = {
 	ADDSET_SEPARATOR("Game Settings"),
@@ -129,6 +149,7 @@ setting settgame_arr[] = {
 	ADDSET_SEPARATOR("HUD Settings"),
 	ADDSET_CUSTOM   ("Grenade timers", GrenTimersRead, GrenTimersToggle, "Displays a grenade countdown."),
 	ADDSET_CUSTOM   ("Auto ID", AutoIdRead, AutoIdToggle, "Auto identifies targets."),
+	ADDSET_CUSTOM   ("Class tips", ClassTipsRead, ClassTipsToggle, "Show class tips on spawn."),
 	ADDSET_SEPARATOR("Zoom Settings"),
 	ADDSET_NUMBER   ("Default zoom FOV", cf_zoomfov, 10, 60, 5),
 	ADDSET_NUMBER   ("Zoom increments", cf_zoomsteps, 5, 30, 5),

@@ -993,6 +993,7 @@ static void conres_changed_callback (cvar_t *var, char *string, qbool *cancel)
 	else
 		Cvar_SetValue(&r_conscale, Q_atof(string));
 
+	cf_sbar_update();
 	VID_UpdateConRes();
 	*cancel = true;
 }

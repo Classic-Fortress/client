@@ -135,8 +135,48 @@ void ClassTipsToggle() {
 	Cvar_SetValue(&cf_classtips, newvalue);
 }
 
+static int ClassConfigs(void) { return cf_classconfigs.value; }
+const char* ClassConfigsRead(void) {
+	if (ClassConfigs() == 1) {
+		return "on";
+	}
+	return "off";
+}
+void ClassConfigsToggle() {
+	int newvalue;
+
+	if (cf_classconfigs.value == 1) {
+		newvalue = 0;
+	}
+	else {
+		newvalue = 1;
+	}
+
+	Cvar_SetValue(&cf_classconfigs, newvalue);
+}
+
+static int MapConfigs(void) { return cf_mapconfigs.value; }
+const char* MapConfigsRead(void) {
+	if (MapConfigs() == 1) {
+		return "on";
+	}
+	return "off";
+}
+void MapConfigsToggle() {
+	int newvalue;
+
+	if (cf_mapconfigs.value == 1) {
+		newvalue = 0;
+	}
+	else {
+		newvalue = 1;
+	}
+
+	Cvar_SetValue(&cf_mapconfigs, newvalue);
+}
+
 // GAME SETTINGS TAB
-extern cvar_t name, cf_sensitivity, in_raw, s_volume, cf_fov, cf_grentimers, cf_autoid, cf_classtips, cf_zoomfov, cf_zoomsteps;
+extern cvar_t name, cf_sensitivity, in_raw, s_volume, cf_fov, cf_grentimers, cf_autoid, cf_classtips, cf_classconfigs, cf_mapconfigs, cf_zoomfov, cf_zoomsteps;
 settings_page settgame;
 setting settgame_arr[] = {
 	ADDSET_SEPARATOR("Game Settings"),
@@ -150,6 +190,9 @@ setting settgame_arr[] = {
 	ADDSET_CUSTOM   ("Grenade timers", GrenTimersRead, GrenTimersToggle, "Displays a grenade countdown."),
 	ADDSET_CUSTOM   ("Auto ID", AutoIdRead, AutoIdToggle, "Auto identifies targets."),
 	ADDSET_CUSTOM   ("Class tips", ClassTipsRead, ClassTipsToggle, "Show class tips on spawn."),
+	ADDSET_SEPARATOR("Config Settings"),
+	ADDSET_CUSTOM   ("Class configs", ClassConfigsRead, ClassConfigsToggle, "Execute class config on class change."),
+	ADDSET_CUSTOM   ("Map configs", MapConfigsRead, MapConfigsToggle, "Execute map config on map change."),
 	ADDSET_SEPARATOR("Zoom Settings"),
 	ADDSET_NUMBER   ("Default zoom FOV", cf_zoomfov, 10, 60, 5),
 	ADDSET_NUMBER   ("Zoom increments", cf_zoomsteps, 5, 30, 5),

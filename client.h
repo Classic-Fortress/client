@@ -632,6 +632,8 @@ extern cvar_t cl_restrictions;
 extern	cvar_t	cf_grentimers;
 extern	cvar_t	cf_autoid;
 extern	cvar_t	cf_classtips;
+extern	cvar_t	cf_classconfigs;
+extern	cvar_t	cf_mapconfigs;
 
 // ZQuake cvars
 extern cvar_t	cl_warncmd;

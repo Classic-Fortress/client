@@ -102,9 +102,13 @@ cvar_t cl_pext_alpha = {"cl_pext_alpha", "1"};
 void OnCFGrenTimersChange (cvar_t *var, char *value, qbool *cancel);
 void OnCFAutoIdChange (cvar_t *var, char *value, qbool *cancel);
 void OnCFClassTipsChange (cvar_t *var, char *value, qbool *cancel);
+void OnCFClassConfigsChange (cvar_t *var, char *value, qbool *cancel);
+void OnCFMapConfigsChange (cvar_t *var, char *value, qbool *cancel);
 cvar_t	cf_grentimers = { "cf_grentimers", "1", CVAR_ARCHIVE, OnCFGrenTimersChange};
 cvar_t	cf_autoid = { "cf_autoid", "1", CVAR_ARCHIVE, OnCFAutoIdChange};
 cvar_t	cf_classtips = { "cf_classtips", "1", CVAR_ARCHIVE, OnCFClassTipsChange};
+cvar_t	cf_classconfigs = { "cf_classconfigs", "0", CVAR_ARCHIVE, OnCFClassConfigsChange};
+cvar_t	cf_mapconfigs = { "cf_mapconfigs", "0", CVAR_ARCHIVE, OnCFMapConfigsChange};
 cvar_t	cl_sbar		= {"cl_sbar", "0"};
 cvar_t	cl_hudswap	= {"cl_hudswap", "0"};
 cvar_t	cl_maxfps	= {"cl_maxfps", "0"};
@@ -1789,6 +1793,8 @@ void CL_InitLocal (void)
 	Cvar_Register (&cf_grentimers);
 	Cvar_Register (&cf_autoid);
 	Cvar_Register (&cf_classtips);
+	Cvar_Register (&cf_classconfigs);
+	Cvar_Register (&cf_mapconfigs);
 	Cvar_Register (&cl_sbar);
 	Cvar_Register (&cl_hudswap);
 
@@ -2274,6 +2280,34 @@ void OnCFClassTipsChange (cvar_t *var, char *value, qbool *cancel)
 
 	Info_SetValueForKey (cls.userinfo, "dt", "", MAX_INFO_STRING);
 	CL_UserinfoChanged("dt", value);
+}
+
+void OnCFClassConfigsChange (cvar_t *var, char *value, qbool *cancel)
+{
+	int newvalue = Q_atoi(value);
+
+	if (newvalue < 0 || newvalue > 1){
+		Com_Printf("Invalid cf_classconfigs\n");
+		*cancel = true;
+		return;
+	}
+
+	Info_SetValueForKey (cls.userinfo, "ec", "", MAX_INFO_STRING);
+	CL_UserinfoChanged("ec", value);
+}
+
+void OnCFMapConfigsChange (cvar_t *var, char *value, qbool *cancel)
+{
+	int newvalue = Q_atoi(value);
+
+	if (newvalue < 0 || newvalue > 1){
+		Com_Printf("Invalid cf_mapconfigs\n");
+		*cancel = true;
+		return;
+	}
+
+	Info_SetValueForKey (cls.userinfo, "em", "", MAX_INFO_STRING);
+	CL_UserinfoChanged("em", value);
 }
 
 void CL_QTVPoll (void);

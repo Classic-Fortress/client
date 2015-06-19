@@ -81,10 +81,14 @@ float	unzoomedsensitivity;
 void OnFovChange (cvar_t *var, char *value, qbool *cancel);
 void OnDefaultFovChange (cvar_t *var, char *value, qbool *cancel);
 void OnCFFovChange (cvar_t *var, char *value, qbool *cancel);
+void OnCFZoomFovChange (cvar_t *var, char *value, qbool *cancel);
+void OnCFZoomStepsChange (cvar_t *var, char *value, qbool *cancel);
 void OnChange_scr_clock_format (cvar_t *var, char *value, qbool *cancel);
 cvar_t	scr_fov					= {"fov", "90", CVAR_ARCHIVE, OnFovChange};	// 10 - 140
 cvar_t	default_fov				= {"default_fov", "90", CVAR_NONE, OnDefaultFovChange};
-cvar_t	cf_fov				= {"cf_fov", "", CVAR_ARCHIVE, OnCFFovChange};
+cvar_t	cf_fov					= {"cf_fov", "90", CVAR_ARCHIVE, OnCFFovChange};
+cvar_t	cf_zoomfov				= {"cf_zoomfov", "30", CVAR_ARCHIVE, OnCFZoomFovChange};
+cvar_t	cf_zoomsteps			= {"cf_zoomsteps", "5", CVAR_ARCHIVE, OnCFZoomStepsChange};
 cvar_t	scr_viewsize			= {"viewsize", "100", CVAR_NONE};
 cvar_t	scr_consize				= {"scr_consize", "0.5"};
 cvar_t	scr_conspeed			= {"scr_conspeed", "9999"};
@@ -256,7 +260,7 @@ void SCR_CenterPrint (char *str)
 
 	// count the number of lines for centering
 	scr_center_lines = 1;
-	while (*str) 
+	while (*str)
 	{
 		if (*str == '\n')
 			scr_center_lines++;
@@ -412,6 +416,37 @@ void OnCFFovChange (cvar_t *var, char *value, qbool *cancel)
 
 	Info_SetValueForKey (cls.userinfo, "df", "", MAX_INFO_STRING);
 	CL_UserinfoChanged("df", value);
+}
+
+void OnCFZoomFovChange (cvar_t *var, char *value, qbool *cancel)
+{
+	float zoom_fov = Q_atof(value);
+	float default_fov = Q_atof(Info_ValueForKey (cls.userinfo, "df"));
+
+	if (zoom_fov < 10.0 || zoom_fov >= default_fov){
+		Com_Printf("Invalid cf_zoomfov\n");
+		*cancel = true;
+		return;
+	}
+
+	Info_SetValueForKey (cls.userinfo, "zf", "", MAX_INFO_STRING);
+	CL_UserinfoChanged("zf", value);
+}
+
+void OnCFZoomStepsChange (cvar_t *var, char *value, qbool *cancel)
+{
+	int zoom_steps = Q_atof(value);
+	float zoom_fov = Q_atof(Info_ValueForKey (cls.userinfo, "zf"));
+	float default_fov = Q_atof(Info_ValueForKey (cls.userinfo, "df"));
+
+	if (zoom_steps < 5 || zoom_steps > 20){
+		Com_Printf("Invalid cf_zoomsteps\n");
+		*cancel = true;
+		return;
+	}
+
+	Info_SetValueForKey (cls.userinfo, "zs", "", MAX_INFO_STRING);
+	CL_UserinfoChanged("zs", value);
 }
 
 static void CalcFov(float fov, float *fov_x, float *fov_y, float width, float height)
@@ -641,7 +676,7 @@ void SCR_DrawAccel (void) {
 	pos = (int) ((cosinus_val * scale_factor + 1) * length / 2);
 
 	draw_accel_bar(x, y - 2 * charsize, length, charsize, pos);
-	
+
 	cosinus_str[0] = '\0';
 	sprintf(cosinus_str,"%.3f", cosinus_val);
 	Draw_String(x, y - charsize, cosinus_str);
@@ -1553,7 +1588,7 @@ void DrawCI (void) {
 	}
 }
 
-// scr_teaminfo 
+// scr_teaminfo
 // Variable ti_clients and related functions also used by hud_teaminfo in hud_common.c
 ti_player_t ti_clients[MAX_CLIENTS];
 
@@ -1742,9 +1777,9 @@ static int SCR_Draw_TeamInfoPlayer(ti_player_t *ti_cl, int x, int y, int maxname
 				x += maxloc * FONTWIDTH;
 
 				break;
-			
-				
-			case 'p': // draw powerups	
+
+
+			case 'p': // draw powerups
 			switch (scr_teaminfo_powerup_style.integer) {
 				case 1: // quad/pent/ring image
 					if(!width_only) {
@@ -1972,7 +2007,7 @@ void Update_TeamInfo()
 		if (cl.players[i].spectator || !cl.players[i].name[0])
 			continue;
 
-		st = cl.players[i].stats;	
+		st = cl.players[i].stats;
 
 		ti_clients[i].client  = i; // no, its not stupid
 
@@ -2011,7 +2046,7 @@ void Parse_Shownick(char *s)
 		case 1:
 		{
 			client = atoi( Cmd_Argv( arg++ ) );
-        
+
 			if (client < 0 || client >= MAX_CLIENTS)
 			{
 				Com_DPrintf("Parse_Shownick: wrong client %d\n", client);
@@ -2019,9 +2054,9 @@ void Parse_Shownick(char *s)
 			}
 
 			shownick.client = client;
-	        
+
 			shownick.time   = r_refdef2.time;
-        
+
 			shownick.org[0] = atoi( Cmd_Argv( arg++ ) );
 			shownick.org[1] = atoi( Cmd_Argv( arg++ ) );
 			shownick.org[2] = atoi( Cmd_Argv( arg++ ) );
@@ -2193,7 +2228,7 @@ void Parse_WeaponStats(char *s)
 	arg = 1;
 
 	client = atoi( Cmd_Argv( arg++ ) );
-        
+
 	if (client < 0 || client >= MAX_CLIENTS)
 	{
 		Com_DPrintf("Parse_WeaponStats: wrong client %d\n", client);
@@ -2255,7 +2290,7 @@ static int SCR_Draw_WeaponStatsPlayer(ws_player_t *ws_cl, int x, int y, qbool wi
 
 		s++; // advance
 
-		wp = (int)s[0] - '0'; 
+		wp = (int)s[0] - '0';
 
 		if ( wp <= wpNONE || wp >= wpMAX )
 			continue; // unsupported weapon
@@ -2365,9 +2400,9 @@ static void SCR_MvdWeaponStatsOff_f(void)
 
 /**************************************** 262 HUD *****************************/
 // QW262 -->
-hud_element_t *hud_list=NULL; 
+hud_element_t *hud_list=NULL;
 hud_element_t *prev;
- 
+
 hud_element_t *Hud_FindElement(const char *name)
 {
 	hud_element_t *elem;
@@ -3168,12 +3203,12 @@ void SCR_TileClear (void) {
 //
 // Calculates the cursor scale based on the current screen/text size
 //
-static double SCR_GetCursorScale(void) 
+static double SCR_GetCursorScale(void)
 {
 	return (double) scr_cursor_scale.value * ((double) vid.width / (double)vid.conwidth);
 }
 
-static void SCR_DrawCursor(void) 
+static void SCR_DrawCursor(void)
 {
 	// from in_*.c
 	extern float mouse_x, mouse_y;
@@ -3222,18 +3257,18 @@ static void SCR_DrawCursor(void)
 	scr_pointer_state.y_old = scr_pointer_state.y;
 }
 
-void SCR_DrawElements(void) 
+void SCR_DrawElements(void)
 {
   extern qbool  sb_showscores,  sb_showteamscores;
   extern cvar_t	scr_menudrawhud;
 
-	if (scr_drawloading) 
+	if (scr_drawloading)
 	{
 		SCR_DrawLoading ();
 		Sbar_Draw ();
 		HUD_Draw ();		// HUD -> hexum
 	}
-	else 
+	else
 	{
 		if( !(!scr_menudrawhud.integer && (m_state != m_none)) || (!scr_menudrawhud.integer && (m_state == m_proxy)) )
 		{
@@ -3244,7 +3279,7 @@ void SCR_DrawElements(void)
 				{
 					Con_ClearNotify ();
 				}
-			} 
+			}
 			else if (cl.intermission == 2)
 			{
 				Sbar_FinaleOverlay ();
@@ -3264,15 +3299,15 @@ void SCR_DrawElements(void)
 				SCR_DrawAccel();
 #endif
 
-				if (!sb_showscores && !sb_showteamscores) 
-				{ 
+				if (!sb_showscores && !sb_showteamscores)
+				{
 					// Do not show if +showscores
 					SCR_DrawPause ();
-					
+
 					SCR_DrawAutoID ();
 				}
 
-				if (!cl.intermission) 
+				if (!cl.intermission)
 				{
 					if ((key_dest != key_menu) && (scr_showcrosshair.integer || (!sb_showscores && !sb_showteamscores)))
 					{
@@ -3280,7 +3315,7 @@ void SCR_DrawElements(void)
 					}
 
      				if (!sb_showscores && !sb_showteamscores)
-					{ 
+					{
 						// Do not show if +showscores
 						SCR_Draw_TeamInfo();
 						SCR_Draw_WeaponStats();
@@ -3303,7 +3338,7 @@ void SCR_DrawElements(void)
 
 					// VULT STATS
 					SCR_DrawAMFstats();
-					
+
 					// VULT DISPLAY KILLS
 					if (amf_tracker_frags.value || amf_tracker_flags.value || amf_tracker_streaks.value )
 						VX_TrackerThink();
@@ -3358,7 +3393,7 @@ static void SCR_RenderFrameEnd(void)
 
 // This is called every frame, and can also be called explicitly to flush text to the screen.
 // WARNING: be very careful calling this from elsewhere, because the refresh needs almost the entire 256k of stack space!
-void SCR_UpdateScreen (void) 
+void SCR_UpdateScreen (void)
 {
 	static hud_t *hud_netstats = NULL;
 	extern qbool Minimized;
@@ -3400,19 +3435,19 @@ void SCR_UpdateScreen (void)
 	host_screenupdatecount++;  // For HUD.
 
 	// Check for vid changes.
-	if (oldfov != scr_fov.value) 
+	if (oldfov != scr_fov.value)
 	{
 		oldfov = scr_fov.value;
 		vid.recalc_refdef = true;
 	}
 
-	if (oldscreensize != scr_viewsize.value) 
+	if (oldscreensize != scr_viewsize.value)
 	{
 		oldscreensize = scr_viewsize.value;
 		vid.recalc_refdef = true;
 	}
 
-	if (oldsbar != cl_sbar.value) 
+	if (oldsbar != cl_sbar.value)
 	{
 		oldsbar = cl_sbar.value;
 		vid.recalc_refdef = true;
@@ -3984,6 +4019,8 @@ void SCR_Init (void)
 	Cvar_Register (&scr_fov);
 	Cvar_Register (&default_fov);
 	Cvar_Register (&cf_fov);
+	Cvar_Register (&cf_zoomfov);
+	Cvar_Register (&cf_zoomsteps);
 	Cvar_Register (&scr_viewsize);
 
 	Cvar_SetCurrentGroup(CVAR_GROUP_SBAR);
@@ -4078,7 +4115,7 @@ void SCR_Init (void)
 
 	Cmd_AddCommand ("+cl_wp_stats", SCR_MvdWeaponStatsOn_f);
 	Cmd_AddCommand ("-cl_wp_stats", SCR_MvdWeaponStatsOff_f);
-	
+
 	Cvar_Register (&scr_coloredText);
 
 	// QW 262 HUD
@@ -4877,8 +4914,8 @@ void SCR_DrawMVStatus(void)
 	{
 		if (cl_mvinset.value)
 		{
-			// Only draw the mini hud for the inset, 
-			// since we probably want the full size hud 
+			// Only draw the mini hud for the inset,
+			// since we probably want the full size hud
 			// for the main view.
 			if (CURRVIEW == 2)
 			{

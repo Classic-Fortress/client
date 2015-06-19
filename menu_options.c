@@ -116,7 +116,7 @@ void AutoIdToggle() {
 }
 
 // GAME SETTINGS TAB
-extern cvar_t name, cf_sensitivity, in_raw, s_volume, cf_fov, cf_grentimers, cf_autoid;
+extern cvar_t name, cf_sensitivity, in_raw, s_volume, cf_fov, cf_grentimers, cf_autoid, cf_zoomfov, cf_zoomsteps;
 settings_page settgame;
 setting settgame_arr[] = {
 	ADDSET_SEPARATOR("Game Settings"),
@@ -125,10 +125,13 @@ setting settgame_arr[] = {
 	ADDSET_CUSTOM	("Invert mouse", InvertMouseRead, InvertMouseToggle, "Inverts the Y axis."),
 	ADDSET_BOOL	("Raw mouse input", in_raw),
 	ADDSET_NUMBER	("Volume", s_volume, 0, 1, 0.05),
-	ADDSET_NUMBER   ("Field of View", cf_fov, 40, 140, 2),
+	ADDSET_NUMBER   ("Field of View", cf_fov, 70, 140, 5),
 	ADDSET_SEPARATOR("HUD Settings"),
 	ADDSET_CUSTOM   ("Grenade timers", GrenTimersRead, GrenTimersToggle, "Displays a grenade countdown."),
 	ADDSET_CUSTOM   ("Auto ID", AutoIdRead, AutoIdToggle, "Auto identifies targets."),
+	ADDSET_SEPARATOR("Zoom Settings"),
+	ADDSET_NUMBER   ("Default zoom FOV", cf_zoomfov, 10, 60, 5),
+	ADDSET_NUMBER   ("Zoom increments", cf_zoomsteps, 5, 30, 5),
 };
 
 void CT_Opt_Game_Draw (int x, int y, int w, int h, CTab_t *tab, CTabPage_t *page) {

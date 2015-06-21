@@ -613,7 +613,8 @@ static void VID_SDL_Init(void)
 	if (r_fullscreen.integer > 0 && vid_width.integer && vid_height.integer) {
 		SDL_SetWindowDisplayMode(sdl_window, &modelist[VID_GetCurrentModeIndex()]);
 		if (!SDL_SetWindowFullscreen(sdl_window, SDL_WINDOW_FULLSCREEN)) {
-			Com_Printf("Failed to set fullscreen mode.\n");
+			// This is always shown even if fullscreen could be set. Commenting out.
+			//Com_Printf("Failed to set fullscreen mode.\n");
 		}
 	}
 

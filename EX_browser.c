@@ -43,7 +43,7 @@ int source_unique = 0;
 
 // searching
 #define MAX_SEARCH 20
-#define SEARCH_TIME 3
+#define SEARCH_TIME 5
 double searchtime = -10;
 
 #define MWHEEL_SCROLL_STEP 4
@@ -978,8 +978,13 @@ void SB_Servers_Draw (int x, int y, int w, int h)
 	if (rebuild_servers_list)
 		Rebuild_Servers_List();
 
-	if (searchtype != search_server  ||  searchtime + SEARCH_TIME < cls.realtime)
+	if (searchtype != search_server  ||  searchtime + SEARCH_TIME < cls.realtime) {
+		if (searchtype == search_server) {
+			resort_servers = 1;
+			searchstring[0] = '\0';
+		}
 		searchtype = search_none;
+	}
 
 	if (resort_servers)
 	{
@@ -1102,10 +1107,22 @@ void SB_Servers_Draw (int x, int y, int w, int h)
 		}
 		Sys_SemPost(&serverlist_semaphore);
 	} else if (!adding_server) {
-		UI_Print_Center(x, y+8, w, "No servers filtered", false);
-		UI_Print_Center(x, y+24, w, "Press [space] to refresh the list", true);
-		UI_Print_Center(x, y+40, w, "Mark some sources on the next tab", false);
-		UI_Print_Center(x, y+48, w, "or press [Insert] to add a server", false);
+		if (searchtype)
+		{
+			snprintf(line, sizeof (line), "No servers matching: %-7s", searchstring);
+			UI_Print_Center(x, y+8, w, line, false);
+			UI_Print_Center(x, y+24, w, "Press [backspace] to remove filter", true);
+
+			int stimeleft = searchtime + SEARCH_TIME - cls.realtime + 1;
+			snprintf(line, sizeof (line), "Resetting filter in %-7s", Q_ftos(stimeleft));
+			UI_Print_Center(x, y+40, w, line, false);
+		}
+		else {
+			UI_Print_Center(x, y+8, w, "No servers filtered", false);
+			UI_Print_Center(x, y+24, w, "Press [space] to refresh the list", true);
+			UI_Print_Center(x, y+40, w, "Mark some sources on the next tab", false);
+			UI_Print_Center(x, y+48, w, "or press [Insert] to add a server", false);
+		}
 	}
 
     // adding server
@@ -2039,9 +2056,7 @@ int SB_Servers_Key(int key)
             resort_servers = 1;
 
             if (!SearchNextServer(Servers_pos))
-                if (!SearchNextServer(0))
-					// FIXME: non-ascii chars
-					strlcpy (searchstring, "ξοτ ζουξδ", sizeof (searchstring));  // not found
+                SearchNextServer(0);
         }
 		return true;
     }

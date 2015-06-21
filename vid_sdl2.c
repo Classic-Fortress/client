@@ -117,6 +117,7 @@ cvar_t r_showextensions       = {"vid_showextensions",    "0",   CVAR_SILENT };
 cvar_t gl_multisamples        = {"gl_multisamples",       "0",   CVAR_LATCH }; // It's here because it needs to be registered before window creation
 
 cvar_t cf_sbar                = {"cf_sbar",               "0",   CVAR_ARCHIVE, cf_sbar_callback };
+cvar_t cf_sbar_offset         = {"cf_sbar_offset",        "0",   CVAR_ARCHIVE, cf_sbar_callback };
 
 //
 // function declaration
@@ -124,7 +125,7 @@ cvar_t cf_sbar                = {"cf_sbar",               "0",   CVAR_ARCHIVE, c
 
 static void cf_sbar_update()
 {
-	char *value = Q_ftos(floor(glConfig.vidHeight / r_conscale.value / 8 - 12));
+	char *value = Q_ftos(floor(glConfig.vidHeight / r_conscale.value / 8 - 12 + cf_sbar_offset.value));
 
 	if (!cf_sbar.value)
 		value = "";
@@ -137,6 +138,9 @@ static void cf_sbar_callback (cvar_t *var, char *value, qbool *cancel)
 {
 	if (var == &cf_sbar)
 		Cvar_SetValue(&cf_sbar, Q_atoi(value));
+	else if (var == &cf_sbar_offset)
+		Cvar_SetValue(&cf_sbar_offset, Q_atoi(value));
+
 	cf_sbar_update();
 }
 
@@ -521,6 +525,7 @@ void VID_RegisterCvars(void)
 	Cvar_Register(&vid_flashonactivity);
 	Cvar_Register(&r_showextensions);
 	Cvar_Register(&cf_sbar);
+	Cvar_Register(&cf_sbar_offset);
 
 	Cvar_ResetCurrentGroup();
 }

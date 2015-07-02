@@ -414,8 +414,7 @@ void OnCFFovChange (cvar_t *var, char *value, qbool *cancel)
 	if (strlen(value) > 0 && (scr_fov.value == var->value || strlen(var->string) == 0))
 		Cvar_SetValue(&scr_fov, newfov);
 
-	Info_SetValueForKey (cls.userinfo, "df", "", MAX_INFO_STRING);
-	CL_UserinfoChanged("df", value);
+	CF_Options_Store("df", value);
 }
 
 void OnCFZoomFovChange (cvar_t *var, char *value, qbool *cancel)
@@ -429,8 +428,7 @@ void OnCFZoomFovChange (cvar_t *var, char *value, qbool *cancel)
 		return;
 	}
 
-	Info_SetValueForKey (cls.userinfo, "zf", "", MAX_INFO_STRING);
-	CL_UserinfoChanged("zf", value);
+	CF_Options_Store("zf", value);
 }
 
 void OnCFZoomStepsChange (cvar_t *var, char *value, qbool *cancel)
@@ -445,8 +443,7 @@ void OnCFZoomStepsChange (cvar_t *var, char *value, qbool *cancel)
 		return;
 	}
 
-	Info_SetValueForKey (cls.userinfo, "zs", "", MAX_INFO_STRING);
-	CL_UserinfoChanged("zs", value);
+	CF_Options_Store("zs", value);
 }
 
 static void CalcFov(float fov, float *fov_x, float *fov_y, float width, float height)

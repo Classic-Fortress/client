@@ -62,6 +62,9 @@ CTab_t options_tab;
 int options_unichar;	// variable local to this module
 cvar_t menu_advanced = { "menu_advanced", "0" };
 
+char cf_infokey[3][10] = {0};				// store cf settings in these and apply
+char cf_infoval[5][10] = {0};				// when menu is closed
+
 static qbool InvertMouse(void) { return m_pitch.value < 0; }
 const char* InvertMouseRead(void) { return InvertMouse() ? "on" : "off"; }
 void InvertMouseToggle(qbool back) { Cvar_SetValue(&m_pitch, -m_pitch.value); }
@@ -452,12 +455,69 @@ CTabPage_Handlers_t options_video_handlers = {
 
 //
 
+void CF_Options_StoreAtIndex(int index, char *key, char *value) {
+	strcpy(cf_infokey[index], key);
+	strcpy(cf_infoval[index], value);
+}
+
+void CF_Options_Set(char *key, char *value) {
+	Info_SetValueForKey (cls.userinfo, key, "", MAX_INFO_STRING);
+	CL_UserinfoChanged(key, value);
+}
+
+void CF_Options_Reset() {
+	int arrlen = sizeof(cf_infokey) / sizeof(cf_infokey[0]);
+	int i;
+
+	for (i = 0; i < arrlen; i++) {
+		if (strlen(cf_infokey[i]) == 0) {
+			break;
+		}
+
+		CF_Options_StoreAtIndex(i, "", "");
+	}
+}
+
+void CF_Options_Apply() {
+	int arrlen = sizeof(cf_infokey) / sizeof(cf_infokey[0]);
+	int i;
+
+	for (i = 0; i < arrlen; i++) {
+		if (strlen(cf_infokey[i]) == 0) {
+			break;
+		}
+
+		CF_Options_Set(cf_infokey[i], cf_infoval[i]);
+	}
+
+	CF_Options_Reset();
+}
+
+void CF_Options_Store(char *key, char *value) {
+	int arrlen = sizeof(cf_infokey) / sizeof(cf_infokey[0]);
+	int i;
+
+	if (m_state != m_options) {
+		CF_Options_Set(key, value);
+		return;
+	}
+
+	for (i = 0; i < arrlen; i++) {
+		if ((strcmp(cf_infokey[i], key) == 0) || (strlen(cf_infokey[i]) == 0)) {
+			CF_Options_StoreAtIndex(i, key, value);
+			break;
+		}
+	}
+}
+
 void Menu_Options_Key(int key, wchar unichar) {
 	int handled = CTab_Key(&options_tab, key, unichar);
 	options_unichar = unichar;
 
-	if (!handled && (key == K_ESCAPE || key == K_MOUSE2))
+	if (!handled && (key == K_ESCAPE || key == K_MOUSE2)) {
 		M_Menu_Main_f();
+		CF_Options_Apply();
+	}
 }
 
 void Menu_Options_Draw(void) {

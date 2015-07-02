@@ -580,8 +580,7 @@ void OnCFSensitivityChange (cvar_t *var, char *value, qbool *cancel)
 	if (strlen(value) > 0 && (var->value == sensitivity.value || strlen(var->string) == 0))
 		Cvar_SetValue(&sensitivity, fvalue);
 
-	Info_SetValueForKey (cls.userinfo, "ds", "", MAX_INFO_STRING);
-	CL_UserinfoChanged("ds", value);
+	CF_Options_Store("ds", value);
 }
 
 void CL_Rotate_f (void)

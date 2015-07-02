@@ -2234,7 +2234,6 @@ void OnCFGrenTimersChange (cvar_t *var, char *value, qbool *cancel)
 		return;
 	}
 
-	Info_SetValueForKey (cls.userinfo, "nt", "", MAX_INFO_STRING);
 	if (newvalue == 1){
 		nt = "0";
 	}
@@ -2244,7 +2243,7 @@ void OnCFGrenTimersChange (cvar_t *var, char *value, qbool *cancel)
 	else {
 		nt = "1";
 	}
-	CL_UserinfoChanged("nt", nt);
+	CF_Options_Store("nt", nt);
 }
 
 void OnCFAutoIdChange (cvar_t *var, char *value, qbool *cancel)
@@ -2257,8 +2256,7 @@ void OnCFAutoIdChange (cvar_t *var, char *value, qbool *cancel)
 		return;
 	}
 
-	Info_SetValueForKey (cls.userinfo, "ai", "", MAX_INFO_STRING);
-	CL_UserinfoChanged("ai", value);
+	CF_Options_Store("ai", value);
 }
 
 void OnCFClassTipsChange (cvar_t *var, char *value, qbool *cancel)
@@ -2278,8 +2276,7 @@ void OnCFClassTipsChange (cvar_t *var, char *value, qbool *cancel)
 		value = "1";
 	}
 
-	Info_SetValueForKey (cls.userinfo, "dt", "", MAX_INFO_STRING);
-	CL_UserinfoChanged("dt", value);
+	CF_Options_Store("dt", value);
 }
 
 void OnCFClassConfigsChange (cvar_t *var, char *value, qbool *cancel)
@@ -2292,8 +2289,7 @@ void OnCFClassConfigsChange (cvar_t *var, char *value, qbool *cancel)
 		return;
 	}
 
-	Info_SetValueForKey (cls.userinfo, "ec", "", MAX_INFO_STRING);
-	CL_UserinfoChanged("ec", value);
+	CF_Options_Store("ec", value);
 }
 
 void OnCFMapConfigsChange (cvar_t *var, char *value, qbool *cancel)
@@ -2306,8 +2302,7 @@ void OnCFMapConfigsChange (cvar_t *var, char *value, qbool *cancel)
 		return;
 	}
 
-	Info_SetValueForKey (cls.userinfo, "em", "", MAX_INFO_STRING);
-	CL_UserinfoChanged("em", value);
+	CF_Options_Store("em", value);
 }
 
 void CL_QTVPoll (void);

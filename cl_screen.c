@@ -437,7 +437,7 @@ void OnCFZoomStepsChange (cvar_t *var, char *value, qbool *cancel)
 	float zoom_fov = Q_atof(Info_ValueForKey (cls.userinfo, "zf"));
 	float default_fov = Q_atof(Info_ValueForKey (cls.userinfo, "df"));
 
-	if (zoom_steps < 5 || zoom_steps > 20){
+	if (zoom_steps < 5 || zoom_steps > 30){
 		Com_Printf("Invalid cf_zoomsteps\n");
 		*cancel = true;
 		return;

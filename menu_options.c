@@ -188,7 +188,7 @@ setting settgame_arr[] = {
 	ADDSET_CUSTOM	("Invert mouse", InvertMouseRead, InvertMouseToggle, "Inverts the Y axis."),
 	ADDSET_BOOL	("Raw mouse input", in_raw),
 	ADDSET_NUMBER	("Volume", s_volume, 0, 1, 0.05),
-	ADDSET_NUMBER   ("Field of View", cf_fov, 70, 140, 5),
+	ADDSET_NUMBER   ("Field of View", cf_fov, 70, 130, 5),
 	ADDSET_SEPARATOR("HUD Settings"),
 	ADDSET_CUSTOM   ("Grenade timers", GrenTimersRead, GrenTimersToggle, "Displays a grenade countdown."),
 	ADDSET_CUSTOM   ("Auto ID", AutoIdRead, AutoIdToggle, "Auto identifies targets."),

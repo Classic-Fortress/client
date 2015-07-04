@@ -241,25 +241,25 @@ setting settbinds_arr[] = {
 	ADDSET_BIND("call medic", "saveme"),
 
 	ADDSET_SEPARATOR("Gameplay"),
-	ADDSET_BIND("change class", "changeclass"),
-	ADDSET_BIND("change team", "changeteam"),
-	ADDSET_BIND("discard ammo", "discard"),
-	ADDSET_BIND("drop flag", "dropitems"),
 	ADDSET_BIND("class special", "special"),
+	ADDSET_BIND("discard ammo", "discard"),
+	ADDSET_BIND("drop flag", "dropflag"),
 
 	ADDSET_SEPARATOR("Combat"),
 	ADDSET_BIND("attack", "+attack"),
 	ADDSET_BIND("next weapon", "weapnext"),
 	ADDSET_BIND("previous weapon", "weapprev"),
 	ADDSET_BIND("last weapon", "weaplast"),
-	ADDSET_BIND("reload", "reload"),
-	ADDSET_BIND("hand grenade", "+gren1"),
-	ADDSET_BIND("special grenade", "+gren2"),
-	ADDSET_BIND("switch grenades", "grenswitch"),
+	ADDSET_BIND("reload current", "reload"),
+	ADDSET_BIND("reload next", "reloadnext"),
+	ADDSET_BIND("hand grenade", "gren1"),
+	ADDSET_BIND("special grenade", "gren2"),
 
 	ADDSET_SEPARATOR("Miscellaneous"),
-	ADDSET_BIND("take screenshot", "screenshot"),
+	ADDSET_BIND("change class", "changeclass"),
+	ADDSET_BIND("change team", "changeteam"),
 	ADDSET_BIND("show scores", "+showteamscores"),
+	ADDSET_BIND("take screenshot", "screenshot"),
 };
 
 void CT_Opt_Binds_Draw (int x2, int y2, int w, int h, CTab_t *tab, CTabPage_t *page) {

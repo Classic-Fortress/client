@@ -682,16 +682,22 @@ qbool Settings_Key(settings_page* tab, int key, wchar unichar)
 	case K_END: tab->marked = tab->count - 1; up = true; break;
 	case K_HOME: tab->marked = 0; break;
 
-	case K_ENTER: case K_MOUSE1: case '=': case KP_PLUS:
+	case K_RIGHTARROW: case K_ENTER: case K_MOUSE1: case '=': case KP_PLUS:
 		switch (type) {
-		case stt_string: StringEntryLeave(tab->settings + tab->marked); break;
+		case stt_string:
+			if (key == K_ENTER) {
+				StringEntryLeave(tab->settings + tab->marked);
+				break;
+			}
+			CEditBox_Key(&editbox, key, unichar);
+			return true;
 		case stt_bind: tab->mode = SPM_BINDING; break;
 		case stt_skin: tab->mode = SPM_CHOOSESKIN; break;
 		default: Setting_Increase(tab->settings + tab->marked); break;
 		}
 		return true;
 
-	case K_BACKSPACE: case '-': case KP_MINUS:
+	case K_LEFTARROW: case '-': case KP_MINUS:
 		switch (type) {
 		case stt_action: return false;
 		case stt_string: CEditBox_Key(&editbox, key, unichar); return true;
@@ -731,7 +737,7 @@ qbool Settings_Key(settings_page* tab, int key, wchar unichar)
 	default:
 		switch (type) {
 		case stt_string:
-			if (key != K_TAB && key != K_ESCAPE && key != K_LEFTARROW && key != K_RIGHTARROW) {
+			if (key != K_TAB && key != K_ESCAPE) {
 				CEditBox_Key(&editbox, key, unichar);
 				return true;
 			}
